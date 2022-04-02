@@ -1,0 +1,38 @@
+// src/sass/variables.scss
+
+// Globals
+$body-font-family: 'Roboto', sans-serif !default;
+$font-size-root: 1.2vw;
+
+// Variables must come before the import
+$data-table-regular-header-height: 4vw;
+$data-table-regular-row-height: 4vw;
+$data-table-regular-header-font-size: 1.4vw;
+$data-table-regular-row-font-size: 1.3vw;
+
+$blue: (
+    'base': #007bff,
+  );
+
+$headings: (
+  'h1': (
+    'size': 3.25rem,
+    'line-height': 1.15em
+  ),
+  'h2': (
+    'size': 2.25rem,
+    'line-height': 1.5em
+  ),
+  'h3': (
+    'size': 1.5rem,
+    'line-height': 1.5em,
+    'weight': 300
+  )
+);
+
+.v-label {
+  font-size: 1.2vw;
+  font-weight: 300;
+}
+
+
