@@ -8,12 +8,17 @@ import HelloWorld from '../components/HelloWorld'
 import LogoutPage from './views/LogoutPage'
 
 import FormCourseNew from './views/teacher/FormCourseNew'
-import FormCourseEdit from './views/teacher/FormCourseEdit'
+import FormCourseEdit from './views/FormCourseEdit'
 import FormTestNew from './views/teacher/FormTestNew'
 import FormTestEdit from './views/teacher/FormTestEdit'
 import FormAccCheck from './views/teacher/FormAccCheck'
 
+import DesktopLoadTests from "./views/DesktopLoadTests"
 import UseTest from './views/UseTest'
+import TestRecord from './views/TestRecord'
+
+
+import ShowCourse from './views/ShowCourse'
 
 import NotHavePerms from './views/errors/NotHavePerms'
 
@@ -23,22 +28,31 @@ import { tokenManager } from "../main";
 Vue.use(VueRouter)
 
 const routes = [
+
+    { path: "/hello", component: HelloWorld, name: "hello", meta: { requireAuth: true }},
+
     { path: "/login", component: LoginScreen, name: "login"},
     { path: "/logout", component: LogoutPage, name: "logout"},
     { path: "/kontakty", component: ContactInfo, name: "contacts", meta: { requireAuth: true }},
     { path: "/aplikace", component: AppInfo, name: "application", meta: { requireAuth: true }},
-    { path: "/vyuka", component: LearningCourse, name: "course", meta: { requireAuth: true }, props: true},
-    { path: "/testy", component: HelloWorld, name: "test", meta: { requireAuth: true }},
-
-    { path: "/novy/kurz", component: FormCourseNew, name: "newCourse", meta: { requireAuth: true }},
-    { path: "/upravit/kurz", component: FormCourseEdit, name: "editCourse", meta: { requireAuth: true }},
+    
+    { path: "/testy", component: DesktopLoadTests, name: "test", meta: { requireAuth: true }},
     { path: "/novy/test", component: FormTestNew, name: "newTest", meta: { requireAuth: true }},
     { path: "/upravit/test", component: FormTestEdit, name: "editTest", props: true, meta: { requireAuth: true }},
     { path: "/ucty/schvalit", component: FormAccCheck, name: "checkParents", meta: { requireAuth: true }},
 
     { path: "/test/:id_test", component: UseTest, name: "useTest", meta: { requireAuth: true }},
 
-    { path: "/error/prava", component: NotHavePerms, name: "errNotPerms"},
+    { path: "/vysledek/test/:id_record", component: TestRecord, name: "testRecord", meta: { requireAuth: true }},
+
+    { path: "/chyba/prava", component: NotHavePerms, name: "errNotPerms"},
+
+    /* --- kurz --- */
+    { path: "/vyuka", component: LearningCourse, name: "course", meta: { requireAuth: true }, props: true},
+    { path: "/vyuka/kurz/:id_course", component: ShowCourse, name: "courseById", props: true, meta: { requireAuth: true }},
+    { path: "/vyuka/novy/kurz", component: FormCourseNew, name: "newCourse", meta: { requireAuth: true }},
+    { path: "/vyuka/upravit/kurz", component: FormCourseEdit, name: "editCourse", meta: { requireAuth: true }},
+
     /*
     { path: "/register", component: Register, name: "register"},
     { path: "/contacts", component: Contacts, name: "contacts"},

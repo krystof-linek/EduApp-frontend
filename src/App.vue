@@ -1,13 +1,14 @@
 <template>
   <v-app id="app">
-      <login-screen @userLogged="isLoged = !isLoged" v-if='!isLoged'></login-screen>
+      
+      <login-screen v-if='!isLoged' @userLogged="isLoged = !isLoged"></login-screen>
+      
       <div v-else>
-        <div v-if="isSmallDevice">
-          <mobile-app @userLogged="isLoged = !isLoged"></mobile-app>
-        </div>
-        <div v-else>
-          <desktop-app @userLogged="isLoged = !isLoged"></desktop-app>
-        </div>
+
+        <mobile-app v-if="isSmallDevice" @userLogged="isLoged = !isLoged"></mobile-app>
+        
+        <desktop-app v-else @userLogged="isLoged = !isLoged"></desktop-app>
+
       </div>
     
   </v-app>
@@ -21,25 +22,18 @@ import MobileApp from './components/MobileApp'
 
   export default {
     components: {
-    "login-screen": LoginScreen,
-    "desktop-app": DesktopApp,
-    "mobile-app": MobileApp,
+      "login-screen": LoginScreen,
+      "desktop-app": DesktopApp,
+      "mobile-app": MobileApp,
     },
     data: () => ({
       isLoged: false,
-      links: [
-        'O aplikaci',
-        'Kontakt',
-        'Výuka',
-        'Testy',
-      ],
     }),
     computed: {
       isSmallDevice () {
         switch (this.$vuetify.breakpoint.name) {
           case 'xs': return true
           case 'sm': return true
-          case 'md': return true
           default: return false
           }
         },
@@ -73,15 +67,8 @@ import MobileApp from './components/MobileApp'
   height: 50px;
 }
 
-#my-blue{
+#my-blue:hover{
   background: rgba(0, 123, 255);
-  color: white;
-}
-
-#my-btn-logout{
-  background: rgba(0, 123, 255);
-  font-weight: bold;
-  font-size: 70%;
   color: white;
 }
 
@@ -90,9 +77,20 @@ h1 {
   font-weight: 350;
 }
 
-@media only screen and (max-width: 1264px){
-
-
-
+#my-window-title-xs{
+  font-size: 5vw;
 }
+#my-window-title-sm{
+  font-size: 4.5vw;
+}
+#my-window-title-md{
+  font-size: 3vw;
+}
+#my-window-title-lg{
+  font-size: 2.2vw;
+}
+#my-window-title-xl{
+  font-size: 2vw;
+}
+
 </style>

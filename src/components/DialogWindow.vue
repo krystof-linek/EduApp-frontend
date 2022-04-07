@@ -1,29 +1,33 @@
 <template>
-  <div class="text-center">
-    <v-dialog v-model="dialog" width="40vw">
+    <v-dialog v-model="dialog" :width="dialogWidth" persistent>
       <v-card>
-        <v-card-title class="text-h6 white--text blue">
+        <v-card-title :style="titleFontSize" class="pb-3 pb-sm-4 white--text blue">
           {{propTitle}}
         </v-card-title>
 
-        <v-card-text class="mt-2" style="font-size: 1.2vw">
+        <v-card-text :style="textFontSize" class="mt-4 font-weight-bold">
             {{propText}}
         </v-card-text>
 
         <v-divider></v-divider>
 
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn class="font-weight-bold" color="success" text @click="setResult(true)">
-            ANO
-          </v-btn>
-          <v-btn class="font-weight-bold" color="error" text @click="setResult(false)">
+        <v-row class="py-0 my-0 ma-2">
+
+          <v-col cols="6" class="text-center py-2 py-sm-4">
+            <v-btn :style="btnFontStyle" class="font-weight-bold" color="success" text @click="setResult(true)">
+                ANO
+            </v-btn>
+          </v-col>
+
+          <v-col cols="6" class="text-center py-2 py-sm-4">
+            <v-btn :style="btnFontStyle" class="font-weight-bold" color="error" text @click="setResult(false)">
             NE
           </v-btn>
-        </v-card-actions>
+          </v-col>
+
+        </v-row>
       </v-card>
     </v-dialog>
-  </div>
 </template>
 
 <script>
@@ -37,6 +41,44 @@ export default {
       return {
         dialog: true,
       }
+    },
+    computed: {
+      dialogWidth() {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return '80vw'
+          case 'sm': return '70vw'
+          case 'md': return '50vw'
+          case 'lg': return '50vw'
+          default: return '40vw'
+          }
+      },
+      titleFontSize () {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return 'font-size: 3.8vw; line-height: 150%; font-weight: bold'
+          case 'sm': return 'font-size: 2.4vw; line-height: 150%; font-weight: bold'
+          case 'md': return 'font-size: 2vw; line-height: 170%; font-weight: bold'
+          case 'lg': return 'font-size: 2vw; line-height: 170%; font-weight: bold'
+          default: return 'font-size: 1.5vw; line-height: 170%; font-weight: bold'
+          }
+      },
+      textFontSize () {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return 'font-size: 3.2vw; line-height: 150%;'
+          case 'sm': return 'font-size: 2.2vw; line-height: 150%;'
+          case 'md': return 'font-size: 1.8vw; line-height: 170%;'
+          case 'lg': return 'font-size: 1.5vw; line-height: 170%;'
+          default: return 'font-size: 1.2vw; line-height: 170%;'
+          }
+      },
+      btnFontStyle () {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return 'font-size: 4vw;'
+          case 'sm': return 'font-size: 2.5vw'
+          case 'md': return 'font-size: 2vw; line-height: 170%; font-weight: bold'
+          case 'lg': return 'font-size: 1.5vw; line-height: 170%; font-weight: bold'
+          default: return 'font-size: 1.4vw; line-height: 170%; font-weight: bold'
+          }
+      },
     },
     methods: {
         setResult(result){

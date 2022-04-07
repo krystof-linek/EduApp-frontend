@@ -1,33 +1,42 @@
 <template>
 <div>
   <div v-if="!isNewUser">
-    <v-card class="mx-auto mt-14 mt-sm-8 mt-md-16 rounded-lg" :width="cardWidth">
-      <v-card-title class="justify-center" :id="formatText">
-        <span class="my-welcome-text">Vítejte v aplikaci</span>
-      </v-card-title>
-      <v-card-title class="justify-center" :id="formatText">
-        <span class="my-logo-text">HudcovkaEDU</span>
-      </v-card-title>
-    
-      <v-img class="rounded-circle mx-auto mb-3" :height="imgSize" :width="imgSize" lazy-src="@/assets/icon.png" src="@/assets/icon.png"></v-img>
-    
-      <v-card class="mx-auto" outlined color="transparent">
-        <v-card-title class="justify-center" :id="formatText">
-          <span class="my-description-text">Všechny výukové materiály budou</span>
-          <span class="my-description-text">zpřístupněny pro přihlášení</span>
-        </v-card-title>
-      </v-card>
-    
-      <v-card-actions>
-        <v-btn :width="buttonWidth" v-bind="buttonSize" class="mx-auto rounded-pill mb-3 mt-5" color="primary" @click="login" :id="formatText">
-          <span class="font-weight-bold" style="font-size: 60%">Přihlásit se</span>
-        </v-btn>
-      </v-card-actions>
+    <v-card class="mx-auto mt-10 mt-sm-16 mt-lg-10 mt-xl-16 rounded-lg" :width="cardWidth">
+      <v-col :style="welcomeTextSize" class="text-center pt-8 pt-sm-10">
+          <span>Vítejte v aplikaci</span>
+      </v-col>
+      
+      <v-col :style="schoolNameSize" class="font-weight-bold pb-0 pt-sm-2 text-center">
+          <span>Hudcovka EDU</span>
+      </v-col>
+      
+      <v-col class="py-8 py-sm-10">
+        <v-img class="rounded-circle mx-auto" :height="imgSize" :width="imgSize" lazy-src="@/assets/icon.png" src="@/assets/icon.png"></v-img>
+      </v-col>
 
-      <v-alert v-if="isAlert" border="bottom" colored-border type="error" elevation="2">
-        <span>Vámi zadaný účet není platný pro tuto školu!<br></span>
-        <span>Prosím přihlašte se pomocí Vašeho školního účtu.</span>
+      <v-col class="text-center py-0">
+          <label :style="infoLabelSize">Všechny materiály budou</label>
+      </v-col>
+      <v-col class="text-center pt-0 pb-8">
+          <label :style="infoLabelSize">přístupné po příhlášení</label>
+      </v-col>
+
+      <v-col class="text-center">
+        <v-btn :width="buttonWidth" :style="btnTextSize" class="font-weight-bold rounded-pill py-lg-6 mb-4" color="primary" @click="login">
+          Přihlásit se
+        </v-btn>
+      </v-col>
+
+      <v-alert v-if="isAlert" border="bottom" colored-border type="error" elevation="2" dismissible>
+          <v-col class="pb-4">
+            <label :style="alertLabelSize">Vámi zadaný účet není platný pro tuto školu!</label>
+          </v-col>
+
+          <v-col class="py-0">
+            <label :style="alertLabelSize">Prosím přihlašte se pomocí Vašeho školního účtu.</label>
+          </v-col>
       </v-alert>
+
     </v-card>
   </div>
   <div v-else>
@@ -128,43 +137,11 @@
     computed: {
         cardWidth () {
           switch (this.$vuetify.breakpoint.name) {
-          case 'xs': return '260px'
-          case 'sm': return '300px'
-          case 'md': return '300px'
-          case 'lg': return '400px'
-          default: return '500px' //xl
-          }
-        },
-        cardFormWidth () {
-        switch (this.$vuetify.breakpoint.name) {
-          case 'xs': return '56vh'
-          case 'sm': return '90vh'
-          case 'md': return '70vh'
-          case 'lg': return '70vh'
-          default: return '60vh' //xl
-          }
-        },
-        imgSize () {
-        switch (this.$vuetify.breakpoint.name) {
-          case 'xs': return '100px'
-          case 'sm': return '100px'
-          case 'md': return '110px'
-          case 'lg': return '150px'
-          //case 'xl': return 700
-          default: return '200px' //xl
-          }
-        },
-        buttonSize () {
-          const size = {xs:'small',sm:'small',lg:'large',xl:'x-large'}[this.$vuetify.breakpoint.name];
-          return size ? { [size]: true } : {}
-        },
-        buttonWidth () {
-          switch (this.$vuetify.breakpoint.name) {
-          case 'xs': return '170px'
-          case 'sm': return '170px'
-          case 'md': return '200px'
-          case 'lg': return '250px'
-          default: return '300px' //xl
+            case 'xs': return '70vw'
+            case 'sm': return '40vw'
+            case 'md': return '33vw'
+            case 'lg': return '24vw'
+            default: return '20vw'
           }
         },
         isCorrect(){
@@ -177,13 +154,68 @@
           else
             return false;
         },
-        formatText () {
+        welcomeTextSize () {
           switch (this.$vuetify.breakpoint.name) {
-          case 'xs': return 'my-xs-welcome'
-          case 'sm': return 'my-sm-welcome'
-          case 'md': return 'my-md-welcome'
-          case 'lg': return 'my-lg-welcome'
-          default: return 'my-xl-welcome' //xl
+          case 'xs': return 'font-size: 5vw'
+          case 'sm': return 'font-size: 3vw'
+          case 'md': return 'font-size: 2.5vw'
+          case 'lg': return 'font-size: 2vw'
+          default: return 'font-size: 1.5vw'
+          }
+        },
+        schoolNameSize () {
+          switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return 'font-size: 7vw'
+          case 'sm': return 'font-size: 3.5vw'
+          case 'md': return 'font-size: 3.2vw'
+          case 'lg': return 'font-size: 2.6vw'
+          default: return 'font-size: 2vw'
+          }
+        },
+        imgSize () {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return '25vw'
+          case 'sm': return '13vw'
+          case 'md': return '12vw'
+          case 'lg': return '9vw'
+          //case 'xl': return 700
+          default: return '7vw'
+          }
+        },
+        infoLabelSize () {
+          switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return 'font-size: 4vw'
+          case 'sm': return 'font-size: 2.3vw'
+          case 'md': return 'font-size: 2vw'
+          case 'lg': return 'font-size: 1.5vw'
+          default: return 'font-size: 1.2vw'
+          }
+        },
+        buttonWidth () {
+          switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return '45vw'
+          case 'sm': return '27vw'
+          case 'md': return '20vw'
+          case 'lg': return '17vw'
+          default: return '12vw'
+          }
+        },
+        btnTextSize () {
+          switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return 'font-size: 4vw'
+          case 'sm': return 'font-size: 2vw'
+          case 'md': return 'font-size: 1.5vw'
+          case 'lg': return 'font-size: 1.3vw'
+          default: return 'font-size: 0.9vw'
+          }
+        },
+        alertLabelSize () {
+          switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return 'font-size: 3vw'
+          case 'sm': return 'font-size: 2vw'
+          case 'md': return 'font-size: 1.5vw'
+          case 'lg': return 'font-size: 1.2vw'
+          default: return 'font-size: 1vw'
           }
         },
     },

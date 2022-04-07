@@ -6,8 +6,8 @@
   export default {
     methods:{
       logout(){
-        this.$emit("logoutUser");
         this.$router.push("/");
+        this.$emit("logoutUser");
       },
     },
     mounted(){

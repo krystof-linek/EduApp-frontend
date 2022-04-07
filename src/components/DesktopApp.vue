@@ -1,53 +1,57 @@
 <template>
-  <v-app>
-    
-    <v-app-bar id="my-background" app flat height="100">
-      <v-container class="py-0 fill-height" fluid>
+<div>
+  <v-app v-if="isReady">
+    <v-app-bar id="my-background" app flat :height="$vuetify.breakpoint.name == 'xl' ? 150 : 120">
 
-        <v-hover class="mx-6 mr-8" :style="'cursor: pointer'">
-          <v-img max-height="150" max-width="250" src="@/assets/logo.png" @click="$router.push({ name: 'application' });"></v-img>
-        </v-hover>
-          
-          <div v-if="user != null && user.role == 'TEACHER'">
-            <v-btn class="text-h5 ma-n1 font-weight-bold" v-for="link in links" :key="link" text color="white" @click="changePage(link)">{{ link }}</v-btn>
+      <v-container :class="user.role == 'ADMIN' || user.role == 'TEACHER' ? 'mx-0 py-0 mr-3 mx-xl-16 fill-height' : 'mx-10 py-0 mx-lg-16 fill-height' " fluid>
 
-            <v-menu offset-y>
-              <template v-slot:activator="{ attrs, on }">
-                <v-btn class="text-h5 ml-n1 font-weight-bold" text link color="white" v-bind="attrs" v-on="on">
-                  NÁSTROJE
-                </v-btn>
-              </template>
+        <v-card class="mr-6" outlined color="transparent" @click="$router.push({ name: 'application' })">
+          <v-img :height="$vuetify.breakpoint.name == 'xl' ? 110 : 90" :width="$vuetify.breakpoint.name == 'xl' ? 300 : 250"  src="@/assets/logo.png"></v-img>
+        </v-card>
+              
+        <div class="mt-4" v-if="user != null && user.role == 'TEACHER' && $vuetify.breakpoint.name != 'md' ">
+              
+          <v-btn :style="linkNavbarSize" class="px-0 mr-4 mr-lg-6 font-weight-bold" v-for="link in links" :key="link" text color="white" @click="changePage(link)">{{ link }}</v-btn>
 
-              <v-list>
-                <v-list-item v-for="item in teacherMenu" :key="item.text" @click="$router.push({ name: item.route })">
-                  <v-list-item-icon><v-icon :color=item.color v-text="item.icon"></v-icon></v-list-item-icon>
-                    <v-list-item-title v-text="item.route == 'checkParents' ? item.text + ' (' + notValidatedParents.length + ')'  : item.text"></v-list-item-title>
-                  </v-list-item>
-                </v-list>
-            </v-menu>
-          </div>
+          <v-menu offset-y>
+            <template v-slot:activator="{ attrs, on }">
+              <v-btn :style="linkNavbarSize" class="px-0 mr-4 font-weight-bold" text link color="white" v-bind="attrs" v-on="on">
+                NÁSTROJE
+              </v-btn>
+            </template>
 
-          <div v-else>
-            <v-btn class="text-h5 ma-n1 font-weight-bold" v-for="link in links" :key="link" text color="white" @click="changePage(link)">{{ link }}</v-btn>
-          </div>
-    
+            <v-list>
+              <v-list-item v-for="item in teacherMenu" :key="item.text" @click="$router.push({ name: item.route })">
+                <v-list-item-icon><v-icon :color=item.color v-text="item.icon"></v-icon></v-list-item-icon>
+                  <v-list-item-title v-text="item.route == 'checkParents' ? item.text + ' (' + notValidatedParents.length + ')'  : item.text"></v-list-item-title>
+                </v-list-item>
+            </v-list>
+          </v-menu>
+            
+        </div>
 
-        <v-spacer></v-spacer>
+        <div v-else class="mt-4">
+          <v-btn :style="linkNavbarSize" class="px-0 mr-4 mr-lg-6 font-weight-bold" v-for="link in links" :key="link" text color="white" @click="changePage(link)">{{ link }}</v-btn>
+        </div>
+        
+          <v-spacer></v-spacer>
 
-        <span v-if="user != null" style="color: white; font-weight: bold" class="mr-3 font-italic">{{user.name + ' ' + user.surname}} 
-          <v-avatar class="ma-2" size="30">
-            <img :src='user.picture' referrerpolicy="no-referrer">
-          </v-avatar>
-        </span>
 
-        <v-btn id="my-btn-logout" class="mr-6" @click="logout()">Odhlásit 
-            <v-icon small color="white" class="ml-1">mdi-logout</v-icon> 
-        </v-btn>
-
+          <span v-if="user != null && $vuetify.breakpoint.name != 'md'" :style="nameSize" class="white--text font-weight-bold mr-3 font-italic">{{user.name + ' ' + user.surname}} 
+            <v-avatar class="mx-2 mx-xl-4" :size="$vuetify.breakpoint.name == 'xl' ? 50 : 40">
+              <img :src='user.picture' referrerpolicy="no-referrer">
+            </v-avatar>
+          </span>
+      
+          <v-btn :style="logoutBtnSize" class="font-weight-bold white--text px-2" color="blue" @click="logout()">odhlásit
+            <v-icon v-bind="iconSize" color="white" class="ml-1">mdi-logout</v-icon> 
+          </v-btn>
+      
       </v-container>
-    </v-app-bar>
 
-    <v-main class="grey lighten-2 mt-10">
+    </v-app-bar>
+     
+    <v-main class="grey lighten-2 mt-5 mt-lg-10">
 
       <!-- udaje o uzivateli dosud nejsou nacteny -->
       <v-container v-if="user == null">
@@ -57,16 +61,24 @@
       </v-container>
 
       <!-- zakladni rozlozeni -->
+    
       <div v-else>
         <v-row class="justify-center">
-        <v-sheet class="ma-12" rounded="lg" min-height="70vh" width="80vw">
-          <router-view @logoutUser="logout" :user="user"></router-view>
-        </v-sheet>
+          <v-sheet class="mx-12 mx-lg-6 mx-xl-16" color="transparent" outlined width="80vw">
+            <router-view @logoutUser="logout" :user="user"></router-view>
+          </v-sheet>
         </v-row>
       </div>
+     
 
     </v-main>
   </v-app>
+
+  <v-card v-else>
+    <skeleton-loader></skeleton-loader>
+  </v-card>
+
+</div>
 </template>
 
 <script>
@@ -77,8 +89,11 @@ import SkeletonLoaderUser from './SkeletonLoaderUser'
       "skeleton-loader": SkeletonLoaderUser,
     },
     data: () => ({
+
       email: "",
       user: null,
+
+      isReady: false,
 
       teacherMenu: [
         { icon: 'mdi-account-alert', text: 'Účty ke schválení ', route: 'checkParents', color: 'error', },
@@ -96,6 +111,32 @@ import SkeletonLoaderUser from './SkeletonLoaderUser'
         'Testy',
       ],
     }),
+    computed: {
+      iconSize(){
+        const size = {md: 'small'}[this.$vuetify.breakpoint.name];
+        return size ? { [size]: true } : {}
+      },
+      linkNavbarSize () {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'md': return 'font-size: 2.2vw'
+          case 'lg': return 'font-size: 1.8vw'
+          default: return 'font-size: 1.6vw'
+          }
+      },
+      logoutBtnSize () {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'md': return 'font-size: 1.2vw'
+          case 'lg': return 'font-size: 1.1vw'
+          default: return 'font-size: 1vw'
+          }
+      },
+      nameSize () {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'lg': return 'font-size: 1.3vw'
+          default: return 'font-size: 1.4vw'
+          }
+      },
+    },
     methods: {
       logout(){
         this.$tokenManager.removeToken();
@@ -132,6 +173,9 @@ import SkeletonLoaderUser from './SkeletonLoaderUser'
 
                 if (this.user != null && this.user.role === "TEACHER")
                   this.loadNotValidatedParents();
+
+                else
+                  this.isReady = true;
             } catch (e) {
                 if(e.response.status == 401)
                   this.logout();
@@ -141,6 +185,8 @@ import SkeletonLoaderUser from './SkeletonLoaderUser'
             try{
                 const response = await this.$http.get('/user/parents/not/validated');
                 this.notValidatedParents = response.data;
+
+                this.isReady = true;
             } catch (e) {
                 if(e.response.status == 401)
                   this.logout();

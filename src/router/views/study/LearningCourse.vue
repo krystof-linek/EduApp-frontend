@@ -1,109 +1,137 @@
 <template>
-  <div>
-    <v-stepper v-model="e1" rounded="lg" color="primary">
-      <v-stepper-header>
-        <template v-for="n in steps">
-          <v-stepper-step :key="`${n}-step`" :complete="e1 > n" :step="n" editable :edit-icon="'mdi-check-bold'" color="rgba(0, 123, 255)">{{ vyber[n-1] }}</v-stepper-step>
-          <v-divider v-if="n !== steps" :key="n"></v-divider>
-        </template>
-      </v-stepper-header>
 
-      <v-alert v-if="isAlert" border="left" close-text="Close Alert" color="rgba(0, 123, 255)" dark dismissible>
-        {{alertMessage}}
-      </v-alert>
+<v-card class="mx-md-0 mt-4 mt-lg-0 mx-xl-16 pa-lg-n7" elevation="5" rounded="lg">
 
-      <v-stepper-items>
-        <v-stepper-content v-for="n in steps" :key="`${n}-content`" :step="n " >
-          <v-card class="mb-12" outlined color="transparent">
-              <v-layout row wrap class="ma-2" v-if="n==1">
-                  <v-flex lg4 xl4 v-for="grade in grades" :key="grade">
-                      <v-card id="blue-hover" flat class="text-center ma-5" @click="selectGrade(grade, n)" min-height="80px" elevation="12">
-                          <v-card-text class="text-lg-h5 font-weight-bold"> 
-                              <span class="text-h5 font-weight-bold">{{grade}}. ročník</span>
-                          </v-card-text>    
-                      </v-card>
-                  </v-flex>
-              </v-layout>
+  <v-card-title class="justify-center blue white--text py-2 py-md-4 py-xl-6">
+    <label :id="titleStyle">Výuka</label>
+  </v-card-title>
 
-              <v-layout row wrap class="ma-2" v-if="n==2 && subjects.length != 0">
-                  <v-flex lg4 xl4 v-for="subject in subjects" :key="subject.idSubject">
-                      <v-card id="blue-hover" flat class="text-center ma-5" @click="selectSubject(subject.idSubject, n)" min-height="80px" elevation="12">
-                          <v-card-text class="text-lg-h5 font-weight-bold"> 
-                              <span class="text-lg-h6 text-xl-h5 font-weight-bold">{{subject.title}}</span>
-                          </v-card-text>    
-                      </v-card>
-                  </v-flex>
-              </v-layout>
+<v-stepper outlined v-model="e1" rounded="lg" color="primary">
+  <v-stepper-header>
+    <template v-for="n in steps">
+      <v-stepper-step :key="`${n}-step`" :complete="e1 > n" :step="n" editable :edit-icon="'mdi-check-bold'" color="blue">{{ vyber[n-1] }}</v-stepper-step>
+      <v-divider v-if="n !== steps" :key="n"></v-divider>
+    </template>
+  </v-stepper-header>
 
-  
-              <v-card v-if="n==3 && courses.length != 0">
-                <v-card-title>
-                  <v-text-field v-model="search" append-icon="mdi-magnify" label="Vyhledat kurz" single-line hide-details class="text-h2">
+  <v-alert v-if="isAlert" border="left" close-text="Close Alert" color="blue" dark dismissible>
+    {{alertMessage}}
+  </v-alert>
 
-                  </v-text-field>
-                </v-card-title>
-                <v-data-table :headers="headers" :items="courses" :search="search" @click:row="handleClick" id="my-table" :items-per-page="-1"
-                  :footer-props="{
-                    showFirstLastPage: true,
-                    firstIcon: 'mdi-arrow-collapse-left',
-                    lastIcon: 'mdi-arrow-collapse-right',
-                    prevIcon: 'mdi-minus',
-                    nextIcon: 'mdi-plus',
-                    'items-per-page-text':'počet položek na stránku',
-                    'items-per-page-options': [5, 10, 15, 20, -1],
-                    'items-per-page-all-text': 'Všechny',
-                    'page-text': '{0}-{1} z {2}'
-                }">
-                    
-                </v-data-table>
-              </v-card>
-             
-
-              <v-card v-if="n==4" outlined color="transparent" class="mt-n5">
-                  <v-card-title class="text-lg-h3">{{courseName}}</v-card-title>
-                  <v-divider></v-divider>
-                  <v-card-text v-if="contents.length != 0">
-                    <div v-for="content in contents" :key="content.id_content">
-                      <paragraph v-if="content.content_type == 'paragraph'" :title=content.title :title_size=content.title_size :text=content.text></paragraph>
-                      <mypicture v-if="content.content_type == 'picture'" :title=content.title :src=content.link :description=content.description :alt=content.alt :author=content.author></mypicture>
-                      <myvideo v-if="content.content_type == 'video'" :title=content.title :src=content.link :description=content.description :author=content.author></myvideo>
-                      <mylink v-if="content.content_type == 'link'" :title=content.title :link=content.link :description=content.description :btn_title=content.btn_title :btn_color=content.btn_color></mylink>
-                      <mylist v-if="content.content_type == 'list'" :title=content.title :link=content.link :description=content.description :items=content.items :numbered=content.numbered></mylist>
-                      <mynotice v-if="content.content_type == 'notice'" :title=content.title :description=content.description :color=content.color :icon='content.icon'></mynotice>
-                    </div>
-                  </v-card-text>
-
-                  <div v-else>
-                      <skelet></skelet>
-                  </div>
-
-              </v-card>
+<v-stepper-items>
+  <v-stepper-content v-for="n in steps" :key="`${n}-content`" :step="n " >
+    <v-card outlined color="transparent">
+      
+      <v-layout row wrap class="mx-2 my-1" v-if="n==1">
+        <v-flex md4 lg4 xl4 v-for="grade in grades" :key="grade">
+          <v-card hover rounded="lg" class="mx-5 my-6 mx-xl-10" @click="selectGrade(grade, n)" :height="cardGradeHeight" elevation="20">
+            <v-row align="center" class="mx-3 fill-height"> 
+              <v-col :style="cardTitleStyle" class="text-center py-4 font-weight-bold">
+                {{grade}}. ročník
+              </v-col>
+            </v-row>    
           </v-card>
-        </v-stepper-content>
-      </v-stepper-items>
-    </v-stepper>        
+        </v-flex>
+      </v-layout>
 
-  </div>
+      <v-layout row wrap class="ma-2" v-if="n==2 && subjects.length != 0">
+          <v-flex md4 lg4 xl4 v-for="subject in subjects" :key="subject.idSubject">
+              <v-card hover rounded="lg" class="mx-5 my-6 mx-xl-10" @click="selectSubject(subject.idSubject, n)" :height="cardSubjectHeight" elevation="20">
+                  <v-row align="center" class="mx-3 fill-height"> 
+                      <v-col :style="cardTitleStyle" class="text-center py-4 font-weight-bold">
+                        {{ subject.title.charAt(0).toUpperCase() + subject.title.slice(1) }}
+                      </v-col>
+                  </v-row>    
+              </v-card>
+          </v-flex>
+      </v-layout>
+
+      <v-card outlined color="transparent" class="mt-n4" v-if="n==3 && courses.length != 0">
+        <v-container fluid>
+          <v-data-iterator
+            :items="courses"
+            :search="search"
+            sort-by="title"
+            :sort-desc="sortDesc"
+            :single-expand="showInfo"
+            :expanded.sync="expanded"
+            hide-default-footer
+          >
+                  
+            <template v-slot:header>
+              <v-row align="center">
+        
+                <v-col cols="12">
+                  <v-toolbar elevation="10">
+                    <v-text-field v-model="search" clearable flat hide-details prepend-inner-icon="mdi-magnify" label="Vyhledat"></v-text-field>
+                  </v-toolbar>
+                </v-col>
+
+              </v-row>
+            </template>
+
+            <template v-slot:default="{items, isExpanded, expand }">
+              <v-row>
+                <v-col v-for="item in items" :key="item.id" md="4" lg="4">
+                  <v-card rounded="lg" class="py-2" elevation="10" @click="loadCourseContentById(item.id)">
+                    <v-card-title :style="cardTitleCourseStyle" class="font-weight-bold">
+                      {{ item.title.length > 40? item.title.substring(0,40) + " ...." : item.title}}
+                    </v-card-title>
+
+                    <v-card-actions class="mt-2">
+                      <v-btn block x-small :color="!isExpanded(item) ?  'blue lighten-2' : 'blue-grey lighten-3'" :input-value="isExpanded(item)" @click.stop="expand(item,!isExpanded(item))">
+                        <v-icon color="white">{{ isExpanded(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                      </v-btn>
+                    </v-card-actions>
+
+                    
+              
+                      <v-list v-if="isExpanded(item)" dense>
+                        <v-list-item>
+                          <v-list-item-content>Autor:</v-list-item-content>
+                          <v-list-item-content class="align-end">{{ 
+                            item.user.name.charAt(0).toUpperCase() + item.user.name.slice(1)
+                            + ' ' +
+                            item.user.surname.charAt(0).toUpperCase() + item.user.surname.slice(1)
+                          }}</v-list-item-content>
+                        </v-list-item>
+                      
+                        <v-list-item>
+                          <v-list-item-content>Vytvořen:</v-list-item-content>
+                          <v-list-item-content class="align-end">{{ getDate(item.created) }}</v-list-item-content>
+                        </v-list-item>
+
+                        <v-list-item>
+                          <v-list-item-content>Celý název:</v-list-item-content>
+                        </v-list-item>
+
+                        <v-list-item class="mt-n2">
+                          <v-list-item-content class="align-start font-weight-bold">{{ item.title }}</v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+
+                    <v-divider></v-divider>
+
+                  </v-card>
+                </v-col>
+              </v-row>
+            </template>
+          </v-data-iterator>
+        </v-container>    
+      </v-card>
+    </v-card>
+  </v-stepper-content>
+</v-stepper-items>
+</v-stepper>        
+
+</v-card>
+
 </template>
 
 <script>
-import ContentParagraph from './contents/ContentParagraph'
-import ContentPicture from './contents/ContentPicture'
-import ContentVideo from './contents/ContentVideo'
-import ContentLink from './contents/ContentLink'
-import ContentList from './contents/ContentList'
-import ContentNotice from './contents/ContentNotice'
-import SkeletonLoader from './contents/SkeletonLoader'
+
   export default {
-    components: {
-      "paragraph": ContentParagraph,
-      "mypicture": ContentPicture,
-      "myvideo": ContentVideo,
-      "mylink": ContentLink,
-      "mylist": ContentList,
-      "mynotice": ContentNotice,
-      "skelet": SkeletonLoader,
-    },
+
     props: {
         user: {default: null},
         pCorId: {default: -1},
@@ -112,28 +140,32 @@ import SkeletonLoader from './contents/SkeletonLoader'
     },
     data () {
       return {
-        //grade: 0,
         grades: [1,2,3,4,5,6,7,8,9],
-        //subjectId: 0,
+
+        expanded: [],
+     
         subjects: [],
-        //courseId: '',
+      
         courseName: '',
         courses: [],
-        contents: [],
+      
         e1: 1,
-        steps: 4,
-        vyber: ["Výběr ročníku", "Výběr předmětu", "Výběr kurzu", "Kurz"],
+        steps: 3,
+
+        vyber: ["Výběr ročníku", "Výběr předmětu", "Výběr kurzu"],
+
         isAlert: false,
         alertMessage: '',
-        alertMessages: ["K tomuto ročníku nebyli dosud přířazeny žádné předměty.", "K tomuto předmětu nebyli dosud přířazeny žádné kurzy.", "K tomuto kurzu dosud nebyl vytvořen meteriál."],
-
-        tests: ["Prvni", "druhy", "treti"],
-
+        alertMessages: [
+          "K tomuto ročníku nebyli dosud přířazeny žádné předměty.", 
+          "K tomuto předmětu nebyli dosud přířazeny žádné kurzy.", 
+          "K tomuto kurzu dosud nebyl vytvořen meteriál."
+        ],
+        showInfo: false,
         search: '',
-        headers: [
-          { text: 'Název kurzu', align: 'start', filterable: true, value: 'title',},
-          { text: 'Vytvořil', value: 'user.surname'},
-          { text: 'Vytvořen', value: 'created'},
+        sortDesc: false,
+        keys: [
+          'title',
         ],
       }
     },
@@ -144,7 +176,53 @@ import SkeletonLoader from './contents/SkeletonLoader'
         }
       },
     },
+    computed: {
+      titleStyle() {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return 'my-window-title-xs'
+          case 'sm': return 'my-window-title-sm'
+          case 'md': return 'my-window-title-md'
+          case 'xl': return 'my-window-title-xl'
+          default: return 'my-window-title-lg' //lg
+        }
+      },
+      cardTitleStyle() {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'md': return 'font-size: 2.1vw'
+          case 'lg': return 'font-size: 1.5vw'
+          default: return 'font-size: 1.4vw'
+        }
+      },
+      cardTitleCourseStyle() {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'md': return 'font-size: 2.1vw'
+          case 'lg': return 'font-size: 1.4vw'
+          default: return 'font-size: 1.3vw'
+        }
+      },
+      cardGradeHeight() {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'md': return '7vw'
+          case 'lg': return '5.8vw'
+          default: return '5vw'
+        }
+      },
+      cardSubjectHeight() {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'md': return '9vw'
+          case 'lg': return '6.2vw'
+          default: return '5.5vw'
+        }
+      },
+      filteredKeys () {
+        return this.keys.filter(key => key !== 'title')
+      },
+    },
     methods: {
+      test(vec){
+        console.log(vec)
+
+      },
         nextStep (n) {
             if (n === this.steps) {
                 this.e1 = 1
@@ -161,7 +239,9 @@ import SkeletonLoader from './contents/SkeletonLoader'
         async loadAllSubjectsByGrade(step){
             try{
                 const response = await this.$http.get(`/subject/all/by/grade/${this.grade}`);
+                
                 this.subjects = response.data;
+                
                 if(this.subjects.length)
                     this.nextStep(step);
                 else{
@@ -196,18 +276,13 @@ import SkeletonLoader from './contents/SkeletonLoader'
                   this.$emit("logoutUser"); 
             }
         },
-        handleClick(value) {
-          this.isAlert = false;
-          const idCourse = value.id;
-          this.courseName = value.title;
-          this.loadCourseContentById(idCourse);
-        },
         async loadCourseContentById(id){
+
           try{
             const response = await this.$http.get(`/course/content/by/id/${id}`);
             this.contents = response.data;
             if(this.contents.length)
-              this.nextStep(3);
+              this.$router.push({name: 'courseById', params: { id_course: id, courseContent: this.contents }});
             else{
               this.alertMessage = this.alertMessages[2];
               this.isAlert = true;
@@ -225,7 +300,18 @@ import SkeletonLoader from './contents/SkeletonLoader'
             this.selectSubject(this.pSubId, 2);
           if(this.pCorId != -1)
             this.loadAllCoursesById(this.pCorId);
-        }
+        },
+        getDate(date){
+            let array = date.split('T');
+
+            date = array[0];
+
+            array = date.split('-');
+
+            date = array[2] + '.' + array[1] + '.' + array[0];
+
+            return date;
+        },
     },
     mounted(){
       this.setStepper();
