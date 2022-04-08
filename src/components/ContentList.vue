@@ -1,17 +1,17 @@
 <template>
-    <div :class="title == '' ? 'mb-2 mt-n5' : 'my-1'">
+    <div :class="title == '' ? 'mb-2' : 'my-1'">
 
         <v-card v-if="testItems == null" :style="textStyle" outlined color="transparent">
-            <v-card-text class="black--text" :style="textStyle">
+            <v-card-text class="black--text py-0" :style="textStyle">
 
-                <v-card-title v-if="title != ''" :style="textStyle" class="pa-0 my-0">{{ title }}</v-card-title>
+                <v-card-title v-if="title != ''" :style="textStyle" class="pa-0 my-0 pb-sm-2">{{ title }}</v-card-title>
             
-                <ul class="ml-10 mb-n2" v-if="!numbered">
-                    <li class="my-2 my-xl-4" v-for="item in items" :key="item.id_item">{{ item.text }}</li>
+                <ul class="ml-2 ml-sm-4 mt-sm-n2 ml-lg-10 ml-xl-16" v-if="!numbered">
+                    <li class="my-2 my-sm-3 my-xl-4" v-for="item in items" :key="item.id_item">{{ item.text }}</li>
                 </ul> 
                 
-                <ol class="ml-10 mb-n2" v-else>
-                    <li class="my-2 my-xl-4" v-for="item in items" :key="item.id_item">{{ item.text }}</li>
+                <ol class="ml-2 ml-sm-4 mt-sm-n2 ml-lg-10 ml-xl-16" v-else>
+                    <li class="my-2 my-sm-3 my-xl-4" v-for="item in items" :key="item.id_item">{{ item.text }}</li>
                 </ol>
 
                 <label class="font-italic" v-if="description != ''">{{ description }}</label>
@@ -22,16 +22,16 @@
         <!-- k zobrazení dat, která nejsou uložená -->
 
         <div v-else>
-            <v-card-text class="black--text" :style="textStyle">
+            <v-card-text class="black--text py-0" :style="textStyle">
 
-                <v-card-title v-if="title != ''" :style="textStyle" class="pa-0 my-0">{{ title }}</v-card-title>
+                <v-card-title v-if="title != ''" :style="textStyle" class="pa-0 my-0 pb-sm-2">{{ title }}</v-card-title>
             
-                <ul class="ml-10 mb-n2" v-if="!numbered">
-                    <li class="my-2 my-xl-4" v-for="(item, index) in testItems" :key="index">{{ item.value }}</li>
+                <ul class="ml-2 ml-sm-4 mt-sm-n2 ml-lg-10 ml-xl-16" v-if="!numbered">
+                    <li class="my-2 my-sm-3 my-xl-4" v-for="(item, index) in testItems" :key="index">{{ item.value }}</li>
                 </ul> 
                 
-                <ol class="ml-10 mb-n2" v-else>
-                    <li class="my-2 my-xl-4" v-for="(item, index) in testItems" :key="index">{{ item.value }}</li>
+                <ol class="ml-2 ml-sm-4 mt-sm-n2 ml-lg-10 ml-xl-16" v-else>
+                    <li class="my-2 my-sm-3 my-xl-4" v-for="(item, index) in testItems" :key="index">{{ item.value }}</li>
                 </ol>
 
                 <label class="font-italic" v-if="description != ''">{{ description }}</label>
@@ -53,11 +53,11 @@ export default  {
     computed: {
         textStyle() {
             switch (this.$vuetify.breakpoint.name) {
-            case 'xs': return 'font-size: 2vw'
-            case 'sm': return 'font-size: 1.9vw'
-            case 'md': return 'font-size: 1.8vw'
+            case 'xs': return 'font-size: 3.5vw; line-height: 150%; text-align: justify;'
+            case 'sm': return 'font-size: 2.4vw; line-height: 150%; text-align: justify;'
+            case 'md': return 'font-size: 1.5vw; line-height: 160%; text-align: justify;'
             case 'lg': return 'font-size: 1.3vw; line-height: 160%; text-align: justify;'
-            default: return 'font-size: 1.3vw; line-height: 160%; color: black;' //xl
+            default: return 'font-size: 1.3vw; line-height: 160%; text-align: justify;' //xl
             }
         },
     },

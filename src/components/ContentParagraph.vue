@@ -1,5 +1,5 @@
 <template>
-    <v-card-text class="py-2 py-xl-4 black--text" :style="textStyle" v-if="text != ''">
+    <v-card-text class="py-1 py-sm-2 py-md-2 py-xl-4 black--text" :style="textStyle" v-if="text != ''">
         {{ text }}
     </v-card-text>
 </template>
@@ -11,9 +11,9 @@ export default  {
     computed: {
         textStyle() {
             switch (this.$vuetify.breakpoint.name) {
-            case 'xs': return 'font-size: 2vw'
-            case 'sm': return 'font-size: 1.9vw'
-            case 'md': return 'font-size: 1.8vw'
+            case 'xs': return 'font-size: 3.5vw; line-height: 150%; text-align: justify;'
+            case 'sm': return 'font-size: 2.4vw; line-height: 150%; text-align: justify;'
+            case 'md': return 'font-size: 1.5vw; line-height: 160%; text-align: justify;'
             case 'lg': return 'font-size: 1.3vw; line-height: 160%; text-align: justify;'
             default: return 'font-size: 1.3vw; line-height: 160%; text-align: justify;' //xl
             }

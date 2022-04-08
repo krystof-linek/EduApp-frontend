@@ -26,25 +26,58 @@
         <v-stepper-content v-for="n in steps" :key="`${n}-content`" :step="n">
           <v-card outlined color="transparent" class="mt-n5">
               <v-card v-if="n==1" outlined color="transparent">
-                <v-card-title>
-                  <v-text-field v-model="search" append-icon="mdi-magnify" label="Vyhledat test" hide-details id="my-search" single-line>
+                
+                <v-toolbar class="mb-3" height="80vw" elevation="10">
+                  <v-text-field class="mt-5" v-model="search" clearable flat hide-details prepend-inner-icon="mdi-magnify" label="Vyhledat"></v-text-field>
+                </v-toolbar>
 
-                  </v-text-field>
-                </v-card-title>
-                <v-data-table :headers="headers" :items="tests" :search="search" @click:row="handleClick" id="my-table" :items-per-page="-1"
-                  :footer-props="{
+                 <v-data-table :headers="headers" :items="tests" hide-default-header :search="search" @click:row="handleClick" :items-per-page="-1"
+                 :footer-props="{
                     showFirstLastPage: true,
                     firstIcon: 'mdi-arrow-collapse-left',
                     lastIcon: 'mdi-arrow-collapse-right',
                     prevIcon: 'mdi-minus',
                     nextIcon: 'mdi-plus',
-                    'items-per-page-text':'počet položek na stránku',
+                    'items-per-page-text':'počet položek na stránce',
                     'items-per-page-options': [5, 10, 15, 20, -1],
                     'items-per-page-all-text': 'Všechny',
                     'page-text': '{0}-{1} z {2}'
-                }"
-                >
-                    
+                }">
+
+                   <template v-slot:header>
+                    <thead class="v-data-table-header">
+                      <tr>
+                        <th class="text-uppercase">Název testu</th>
+                        <th class="text-uppercase">Předmět</th>
+                        <th class="text-uppercase text-center">Ročník</th>
+                        <th class="text-uppercase text-center">Vytvořen</th>
+                        <th class="text-uppercase text-center">Aktivní</th>
+                        <th class="text-uppercase text-center">Akce</th>
+                     </tr>
+                    </thead>
+                  </template>
+                   
+                  <template v-slot:item="row">
+                    <tr>
+                      <td>{{row.item.title}}</td>
+                      <td>{{row.item.subject.title}}</td>
+                      <td class="text-center">{{row.item.subject.grade}}</td>
+                      <td class="text-center">{{row.item.created}}</td>
+                      <td class="text-center">
+                        <v-icon v-if="row.item.active" @click="changeActive(row.item.id, row.item.active)" color="success" x-large>mdi-check-bold</v-icon>
+                        <v-icon v-else color="error" @click="changeActive(row.item.id, row.item.active)" x-large>mdi-close-thick</v-icon>
+                      </td>
+                      <td class="text-center">
+                        <v-btn class="mx-2" fab dark small color="blue" @click="loadTestInfo(row.item.id)">
+                            <v-icon dark>mdi-file-edit</v-icon>
+                        </v-btn>
+                        <v-btn class="mx-2" fab dark small color="red" @click="deleteTestById(row.item.id)">
+                            <v-icon dark>mdi-trash-can</v-icon>
+                        </v-btn>
+                      </td>
+                    </tr>
+                  </template>
+
                 </v-data-table>
               </v-card>
              
@@ -98,12 +131,17 @@
         <my-dialog v-if="dialog.type = 'deactivateTest'" :propType="dialog.type" propTitle="Pozor!" propText="Opravdu si přejete zamezit přístup ostatním uživatelům k testu?" @dialogResult="resultDialog"></my-dialog>
     </div>
 
+    <div v-if="dialogInfo.isSet">
+        <my-dialog-explain :propTitle='dialogInfo.title' :propText='dialogInfo.text' @clickOnOk="dialogInfo.isSet = false"></my-dialog-explain>
+    </div>
+
   </v-card>
 </template>
 <script>
 import TestQuestionEdit from '../../../components/test/TestQuestionEdit.vue'
 import TestInfoEdit from '../../../components/test/TestInfoEdit.vue'
 import DialogWindow from '../../../components/DialogWindow.vue'
+import DialogExplainWindow from '../../../components/DialogExplainWindow.vue'
 
 
   export default {
@@ -111,6 +149,7 @@ import DialogWindow from '../../../components/DialogWindow.vue'
       "test-question-edit": TestQuestionEdit,
       "test-info-edit": TestInfoEdit,
       "my-dialog": DialogWindow,
+      "my-dialog-explain": DialogExplainWindow,
     },
     props: {
         user: {default: null},
@@ -129,6 +168,12 @@ import DialogWindow from '../../../components/DialogWindow.vue'
             type: ""
         },
 
+        dialogInfo: {
+            isSet: false,
+            text: "",
+            title: "",
+        },
+
         isUsed: false,
 
         search: '',
@@ -138,6 +183,7 @@ import DialogWindow from '../../../components/DialogWindow.vue'
           { text: 'Předmět', value: 'subject.title'},
           { text: 'Ročník', value: 'subject.grade'},
           { text: 'Vytvořen', value: 'created'},
+          { text: 'Akce'},
         ],
 
         tests:[],
@@ -176,6 +222,9 @@ import DialogWindow from '../../../components/DialogWindow.vue'
             try{
                 const response = await this.$http.get('/test/all/of/user');
                 this.tests = response.data;
+
+                this.prepareData();
+
             } catch (e) {
                 const status = e.response.status;
               if (status == 401)
@@ -220,10 +269,21 @@ import DialogWindow from '../../../components/DialogWindow.vue'
 
             this.processDialog(dialogResult);
         },
-        async deactivateTest(){
+        changeActive(id_test, active){
+
+          if(active)
+            this.deactivateTestById(id_test);
+          else
+            this.activateTestById(id_test);
+
+        },
+        async deactivateTestById(id_test){
           try{
-            const response = await this.$http.get(`/test/deactivate/by/id/${this.testInfo.id}`);
-            this.testInfo = response.data;
+            const response = await this.$http.get(`/test/deactivate/by/id/${id_test}`);
+
+            if (!response.data.active)
+              this.loadAllTests();
+
           } catch (e) {
             const status = e.response.status;
             if (status == 401)
@@ -232,6 +292,82 @@ import DialogWindow from '../../../components/DialogWindow.vue'
               this.$router.push({ name: 'errNotPerms', });
             }
           }
+        },
+        async activateTestById(id_test){
+          try{
+            const response = await this.$http.get(`/test/activate/by/id/${id_test}`);
+
+            if (response.data.active)
+              this.loadAllTests();
+
+          } catch (e) {
+            const status = e.response.status;
+            if (status == 401)
+              this.$emit("logoutUser"); 
+            else if (status == 403){
+              this.$router.push({ name: 'errNotPerms', });
+            }
+          }
+        },
+        async deactivateTest(){
+          try{
+            const response = await this.$http.get(`/test/deactivate/by/id/${this.testInfo.id}`);
+
+            this.testInfo = response.data;
+
+          } catch (e) {
+            const status = e.response.status;
+            if (status == 401)
+              this.$emit("logoutUser"); 
+            else if (status == 403){
+              this.$router.push({ name: 'errNotPerms', });
+            }
+          }
+        },
+        async deleteTestById(id_test){
+
+          try{
+            const response = await this.$http.delete(`/test/delete/own/by/id/${id_test}`);
+
+            console.log(response);
+
+            this.loadAllTests();
+
+          } catch (e) {
+            const status = e.response.status;
+            if (status == 401)
+              this.$emit("logoutUser"); 
+            else if (status == 403){
+              this.$router.push({ name: 'errNotPerms', });
+            }
+            else if (status == 409){
+              this.dialogInfo.title = 'Upozornění!'
+              this.dialogInfo.text = "Tento test již nelze vymazat, jelikož k němu již existují vyplněné záznamy od studentů."
+              this.dialogInfo.isSet = true;
+            }
+          }
+        },
+        prepareData(){
+          this.tests.forEach((test) => {
+            test.created = this.getDate(test.created);
+            test.icon 
+            test.subject.title = test.subject.title.charAt(0).toUpperCase() + test.subject.title.slice(1)
+            if(test.title.length > 40){
+              test.title = test.title.substring(0,40);
+              test.title += '...';
+            }
+          });
+        },
+        getDate(date){
+            let array = date.split('T');
+
+            date = array[0];
+
+            array = date.split('-');
+
+            date = array[2] + '.' + array[1] + '.' + array[0];
+
+            return date;
         },
     },
     mounted(){

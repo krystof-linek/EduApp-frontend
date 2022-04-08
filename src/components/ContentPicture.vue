@@ -7,14 +7,14 @@
                 </v-card>
             </v-col>
             
-            <v-col v-if="title != ''" class="text-center pb-0 mt-lg-1 mt-xl-2" cols="12">
+            <v-col v-if="title != ''" class="text-center py-0 mt-1 mt-sm-3 mt-lg-5 mt-xl-7" cols="12">
                 <span class="font-weight-regular">{{ title }}</span>
-                <span v-if="title != '' && description != ''" class="text-subtitle-1">: </span>
+                <span class="font-weight-regular" v-if="title != '' && description != ''">: </span>
                 <span class="font-italic">{{ description }}</span>
             </v-col>
 
             <v-col  v-if="title != '' && author != ''" cols="12" class="text-center font-weight-regular py-0">
-                <span class="font-weight-bold">Autor: </span>{{ author }}
+                <span class="font-weight-bold">Zdroj: </span>{{ author }}
             </v-col>
 
         </v-card>
@@ -32,19 +32,19 @@ export default  {
     computed: {
         textStyle() {
             switch (this.$vuetify.breakpoint.name) {
-            case 'xs': return 'font-size: 2vw'
-            case 'sm': return 'font-size: 1.9vw'
-            case 'md': return 'font-size: 1.8vw'
-            case 'lg': return 'font-size: 1vw'
+            case 'xs': return 'font-size: 3vw'
+            case 'sm': return 'font-size: 2vw'
+            case 'md': return 'font-size: 1.2vw'
+            case 'lg': return 'font-size: 1.1vw'
             default: return 'font-size: 1vw' //xl
             }
         },
         cardWdith() {
             switch (this.$vuetify.breakpoint.name) {
-            case 'xs': return '2vw'
-            case 'sm': return '1.9vw'
-            case 'md': return '1.8vw'
-            case 'lg': return '30vw'
+            case 'xs': return '85vw'
+            case 'sm': return '70vw'
+            case 'md': return '40vw'
+            case 'lg': return '40vw'
             default: return '35vw' //xl
             }
         },

@@ -2,7 +2,7 @@
 
 <v-card class="mx-md-0 mt-4 mt-lg-0 mx-xl-16 pa-lg-n7" elevation="5" rounded="lg">
 
-  <v-card-title class="justify-center blue white--text py-2 py-md-4 py-xl-6">
+  <v-card-title class="justify-center font-weight-bold blue white--text py-2 py-md-4 py-xl-6">
     <label :id="titleStyle">Výuka</label>
   </v-card-title>
 

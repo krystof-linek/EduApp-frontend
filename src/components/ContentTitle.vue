@@ -1,6 +1,7 @@
 <template>
-    <v-card-title class="font-weight-bold pb-3 pt-0 pb-lg-4 pt-lg-1 pb-xl-5 pt-xl-2 black--text" :style="titleStyle">
-        <v-icon :style="titleStyle" class="mr-3" v-if="icon != ''" :color="icon_color">{{ icon }}</v-icon>{{ title }}
+    <v-card-title :style="textStyle" class="font-weight-bold black--text py-0 mb-n1 mt-1 mb-sm-0 mt-sm-3 mb-lg-1 mt-lg-4">
+        <v-icon :style="iconStyle" class="mr-3" v-if="icon != ''" :color="icon_color">{{ icon }}</v-icon>
+        <label :style="titleStyle">{{ title }}</label>
     </v-card-title> 
 </template>
 <script>
@@ -12,24 +13,31 @@ export default  {
         icon_color: {default: 'white'},
     },
     computed: {
+        textStyle() {
+            switch (this.$vuetify.breakpoint.name) {
+            case 'xs': return 'font-size: 3.5vw'
+            case 'sm': return 'font-size: 2.4vw'
+            case 'md': return 'font-size: 1.5vw'
+            case 'lg': return 'font-size: 1.3vw'
+            default: return 'font-size: 1.3vw' //hlavni
+            }
+        },
         titleStyle() {
-        switch (this.title_size) {
-          case 2: return 'font-size: 2vw'
-          case 3: return 'font-size: 1.9vw'
-          case 4: return 'font-size: 1.8vw'
-          default: return 'font-size: 2.2vw' //hlavni
-        }
-      },
-    },
-    methods: {
-        titleStyleTest() {
-        switch (this.title_size) {
-          case 2: return '2.5vw'
-          case 3: return '2.5vw'
-          case 4: return '2.5vw'
-          default: return '5vw' //hlavni
-        }
-      },
+            switch (this.title_size) {
+            case 2: return 'font-size: 130%'
+            case 3: return 'font-size: 120%'
+            case 4: return 'font-size: 110%'
+            default: return 'font-size: 140%' //hlavni
+            }
+        },
+        iconStyle() {
+            switch (this.title_size) {
+            case 2: return 'font-size: 170%'
+            case 3: return 'font-size: 160%'
+            case 4: return 'font-size: 150%'
+            default: return 'font-size: 180%' //hlavni
+            }
+        },
     },
 }
 </script>

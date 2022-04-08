@@ -2,7 +2,7 @@
 
 <v-card class="mx-md-0 mt-4 mt-lg-0 mx-xl-16 pa-lg-n7" elevation="5" rounded="lg">
 
-  <v-card-title class="justify-center blue white--text py-2 py-md-4 py-xl-6">
+  <v-card-title class="justify-center font-weight-bold blue white--text py-2 py-md-4 py-xl-6">
     <label :id="titleStyle">Testy</label>
   </v-card-title>
 
@@ -36,7 +36,7 @@
 
       <v-layout row wrap class="ma-2" v-if="n==2 && subjects.length != 0">
           <v-flex md4 lg4 xl4 v-for="subject in subjects" :key="subject.idSubject">
-              <v-card hover rounded="lg" class="mx-5 my-6 mx-xl-10" @click="selectSubject(subject.idSubject, n)" :height="cardSubjectHeight" elevation="20">
+              <v-card hover rounded="lg" class="mx-5 my-6 mx-xl-10" @click="selectSubject(subject.idSubject)" :height="cardSubjectHeight" elevation="20">
                   <v-row align="center" class="mx-3 fill-height"> 
                       <v-col :style="cardTitleStyle" class="text-center py-4 font-weight-bold">
                         {{ subject.title.charAt(0).toUpperCase() + subject.title.slice(1) }}
@@ -46,13 +46,13 @@
           </v-flex>
       </v-layout>
 
-      <v-card outlined color="transparent" class="mt-n4" v-if="n==3 && courses.length != 0">
+      <v-card outlined color="transparent" class="mt-n4" v-if="n==3 && tests.length != 0">
         <v-container fluid>
           <v-data-iterator
-            :items="courses"
+            :items="tests"
             :search="search"
             sort-by="title"
-            :sort-desc="sortDesc"
+            :sort-desc='false'
             :single-expand="showInfo"
             :expanded.sync="expanded"
             hide-default-footer
@@ -73,7 +73,7 @@
             <template v-slot:default="{items, isExpanded, expand }">
               <v-row>
                 <v-col v-for="item in items" :key="item.id" md="4" lg="4">
-                  <v-card rounded="lg" class="py-2" elevation="10" @click="loadCourseContentById(item.id)">
+                  <v-card rounded="lg" class="py-2" elevation="10" @click="redirectToTest(item.id)">
                     <v-card-title :style="cardTitleCourseStyle" class="font-weight-bold">
                       {{ item.title.length > 40? item.title.substring(0,40) + " ...." : item.title}}
                     </v-card-title>
@@ -88,17 +88,22 @@
               
                       <v-list v-if="isExpanded(item)" dense>
                         <v-list-item>
-                          <v-list-item-content>Autor:</v-list-item-content>
+                          <v-list-item-content>Vytvořil:</v-list-item-content>
                           <v-list-item-content class="align-end">{{ 
-                            item.user.name.charAt(0).toUpperCase() + item.user.name.slice(1)
+                            item.author.name.charAt(0).toUpperCase() + item.author.name.slice(1)
                             + ' ' +
-                            item.user.surname.charAt(0).toUpperCase() + item.user.surname.slice(1)
+                            item.author.surname.charAt(0).toUpperCase() + item.author.surname.slice(1)
                           }}</v-list-item-content>
                         </v-list-item>
                       
                         <v-list-item>
                           <v-list-item-content>Vytvořen:</v-list-item-content>
                           <v-list-item-content class="align-end">{{ getDate(item.created) }}</v-list-item-content>
+                        </v-list-item>
+
+                        <v-list-item>
+                          <v-list-item-content>Počet otázek:</v-list-item-content>
+                          <v-list-item-content class="align-end">{{ item.questions.length }}</v-list-item-content>
                         </v-list-item>
 
                         <v-list-item>
@@ -134,36 +139,34 @@
 
     props: {
         user: {default: null},
-        pCorId: {default: -1},
-        pSubId: {default: -1},
-        pGrade: {default: -1},
+        propGrade: {default: -1},
+        propSubjectId: {default: -1},
     },
     data () {
       return {
+        isLoading: true,
+
         grades: [1,2,3,4,5,6,7,8,9],
 
         expanded: [],
      
         subjects: [],
       
-        courseName: '',
-        courses: [],
+        tests: [],
       
         e1: 1,
         steps: 3,
 
-        vyber: ["Výběr ročníku", "Výběr předmětu", "Výběr kurzu"],
+        vyber: ["Výběr ročníku", "Výběr předmětu", "Výběr testu"],
 
         isAlert: false,
         alertMessage: '',
         alertMessages: [
           "K tomuto ročníku nebyli dosud přířazeny žádné předměty.", 
-          "K tomuto předmětu nebyli dosud přířazeny žádné kurzy.", 
-          "K tomuto kurzu dosud nebyl vytvořen meteriál."
+          "K tomuto předmětu nebyli dosud zpřístupněny žádné testy.", 
         ],
         showInfo: false,
         search: '',
-        sortDesc: false,
         keys: [
           'title',
         ],
@@ -219,99 +222,97 @@
       },
     },
     methods: {
-      test(vec){
-        console.log(vec)
-
+      nextStep (n) {
+        if (n === this.steps) {
+          this.e1 = 1
+        } else {
+          this.e1 = n + 1
+        }
       },
-        nextStep (n) {
-            if (n === this.steps) {
-                this.e1 = 1
-            } else {
-                this.e1 = n + 1
-            }
-        },
-        selectGrade(number, step){
-            this.isAlert = false;
-            this.grade = number;
-            if(this.grade != 0)
-                this.loadAllSubjectsByGrade(step);
-        },
-        async loadAllSubjectsByGrade(step){
-            try{
-                const response = await this.$http.get(`/subject/all/by/grade/${this.grade}`);
+      selectGrade(number){
+        this.isAlert = false;
+        this.grade = number;
+        if(this.grade != 0){
+          this.isLoading = true;
+          this.loadAllSubjectsByGrade();
+        }
+      },
+      async loadAllSubjectsByGrade(){
+        try{
+          const response = await this.$http.get(`/subject/all/by/grade/${this.grade}`);
                 
-                this.subjects = response.data;
+          this.subjects = response.data;
                 
-                if(this.subjects.length)
-                    this.nextStep(step);
-                else{
-                    this.alertMessage = this.alertMessages[0];
-                    this.isAlert = true;
-                }
-            } catch (e) {
-                const status = e.response.status;
-                if (status == 401)
-                  this.$emit("logoutUser");
-            }
-        },
-        selectSubject(id, step){
-            this.isAlert = false;
-            this.subjectId = id;
-            if(this.subjectId != 0)
-                this.loadAllCoursesById(step);
-        },
-        async loadAllCoursesById(step){
-            try{
-                const response = await this.$http.get(`/course/all/by/subject/id/${this.subjectId}`);
-                this.courses = response.data;
-                if(this.courses.length)
-                    this.nextStep(step);
-                else{
-                    this.alertMessage = this.alertMessages[1];
-                    this.isAlert = true;
-                }
-            } catch (e) {
-                const status = e.response.status;
-                if (status == 401)
-                  this.$emit("logoutUser"); 
-            }
-        },
-        async loadCourseContentById(id){
-
-          try{
-            const response = await this.$http.get(`/course/content/by/id/${id}`);
-            this.contents = response.data;
-            if(this.contents.length)
-              this.$router.push({name: 'courseById', params: { id_course: id, courseContent: this.contents }});
-            else{
-              this.alertMessage = this.alertMessages[2];
-              this.isAlert = true;
-            }
-          } catch (e) {
-              const status = e.response.status;
-              if (status == 401)
-                this.$emit("logoutUser"); 
+          if(this.subjects.length)
+            this.nextStep(1);
+          else{
+            this.alertMessage = this.alertMessages[0];
+            this.isAlert = true;
           }
-        },
-        setStepper(){
-          if(this.pGrade != -1)
-            this.selectGrade(this.pGrade, 1);
-          if(this.pSubId != -1)
-            this.selectSubject(this.pSubId, 2);
-          if(this.pCorId != -1)
-            this.loadAllCoursesById(this.pCorId);
-        },
-        getDate(date){
-            let array = date.split('T');
 
-            date = array[0];
+          this.isLoading = false;
+        } catch (e) {
+            const status = e.response.status;
+            if (status == 401)
+              this.$emit("logoutUser");
+          
+          this.isLoading = false;
+        }
+      },
+      selectSubject(id){
+        this.isAlert = false;
+        
+        if(id != 0) {
+          this.isLoading = true;
+          this.loadAllTestsBySubjectId(id);
+        }
+      },
+      async loadAllTestsBySubjectId(id){
+    
+        try{
+          const response = await this.$http.get(`/test/get/all/active/by/subject/id/${id}`);
+            
+          this.tests = response.data;
 
-            array = date.split('-');
+          if (this.tests.length == 0){
+            this.alertMessage = this.alertMessages[1];
+            this.isAlert = true;
+          }
 
-            date = array[2] + '.' + array[1] + '.' + array[0];
+          this.isLoading = false;
+          this.nextStep(2);
+            
+        } catch (e) {
+          const status = e.response.status;
+                  
+          if (status == 401)
+            this.$emit("logoutUser");
 
-            return date;
-        },
+              console.log(status);
+
+          this.isLoading = false;
+        }
+      },
+      redirectToTest(id){
+        this.$router.push({ name: 'useTest', params: { id_test: id } });
+      },
+      setStepper(){
+        if(this.propGrade != -1)
+          this.selectGrade(this.propGrade, 1);
+        if(this.propSubjectId != -1)
+          this.selectSubject(this.propSubjectId);
+      },
+      getDate(date){
+        let array = date.split('T');
+
+        date = array[0];
+
+        array = date.split('-');
+
+        date = array[2] + '.' + array[1] + '.' + array[0];
+
+        return date;
+      },
     },
     mounted(){
       this.setStepper();

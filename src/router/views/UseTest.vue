@@ -2,7 +2,7 @@
 <div :class="isStarted == false ? 'mx-lg-16' : 'mx-lg-16'">
     <div :class="isStarted == false ? 'mx-lg-16' : 'mx-lg-16'">
     <v-card class="pb-2 mx-md-16 pa-lg-n7" v-if="testInfo != null" elevation="5" :rounded="$vuetify.breakpoint.name == 'sm' || $vuetify.breakpoint.name == 'xs' ? 'sm' : 'lg'">
-        <v-card-title class="justify-center blue white--text py-2 py-sm-4 py-xl-6">
+        <v-card-title class="justify-center font-weight-bold blue white--text py-2 py-sm-4 py-xl-6">
             <label :id="titleStyle">{{ isStarted == false ? 'Vypracovat test' : testInfo.title }}</label>
         </v-card-title>
             <v-divider></v-divider>
@@ -436,13 +436,21 @@ export default {
         
         },
         getDate(date){
-            let array = date.split(' ');
+            let array = date.split('T');
 
             date = array[0];
 
+            array = array[1].split('.');
+
+            let time = array[0];
+
             array = date.split('-');
 
-            date = array[0] + '.' + array[1] + '.' + array[2];
+            let year = array[0];
+            let month = array[1];
+            let day = array[2];
+
+            date = day + '.' + month + '.' + year + ' ' + time;
 
             return date;
         },
