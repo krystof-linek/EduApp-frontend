@@ -252,9 +252,6 @@ export default {
                 this.dialog.text = this.dialogItems[2].text;
             }
         },
-        test(){
-            console.log("test")
-        },
         processDialog(dialogResult){
             if(dialogResult.type == "deleteQuestion")
                 if (dialogResult.result == true)

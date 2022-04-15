@@ -13,7 +13,7 @@
 
 
     <v-card v-if="isReady" class="py-0 pb-md-4 pb-lg-6">
-        <v-card-title class="justify-center blue white--text py-2 py-sm-4 py-xl-6">
+        <v-card-title class="justify-center font-weight-bold blue white--text py-2 py-sm-4 py-xl-6">
             <label :id="titleStyle">Vyhodnocení testu</label>
         </v-card-title>
         
@@ -34,7 +34,7 @@
                         <tr>
                             <td class="font-weight-bold">Odevzdáno:</td>
                             <td v-if="testRecord.ended != null">{{ getDate(testRecord.ended) }}</td>
-                            <td v-else class="red--text">neodevzdáno</td>
+                            <td v-else class="red--text font-weight-bold">neodevzdáno</td>
                         </tr>
                         <tr>
                             <td class="font-weight-bold">Doba vyprácování:</td>
@@ -42,13 +42,13 @@
                             <td v-else>--:--:--</td>
                         </tr>
                         <tr>
-                            <td class="font-weight-bold">Chybné odpovědi:</td>
-                            <td v-if="testRecord.ended != null">{{ testRecord.badAnswers.length + '/' + getCountAnswers() }}</td>
+                            <td class="font-weight-bold">Správné odpovědi:</td>
+                            <td v-if="testRecord.ended != null">{{ testInfo.questions.length - badQuestions + '/' + testInfo.questions.length }}</td>
                             <td v-else>-/-</td>
                         </tr>
                         <tr>
                             <td class="font-weight-bold">Úspěšnost:</td>
-                            <td v-if="testRecord.ended != null">{{ Math.ceil( (getCountAnswers() - testRecord.badAnswers.length) * 100 / getCountAnswers() ) }}%</td>
+                            <td v-if="testRecord.ended != null">{{ successRate }}</td>
                             <td v-else>0%</td>
                         </tr>
                         <tr>
@@ -197,8 +197,13 @@ export default {
         'my-dialog-explain': DialogExplainWindow,
     },
     data: () => ({
+        id_record: -1,
+
         testRecord: null,
         testInfo: null,
+
+        badQuestions: -1,
+        successRate: '',
 
         isReady: false,
 
@@ -332,28 +337,121 @@ export default {
         }
     },
     methods:{
-        async initRecord(){
-            if (this.$route.params.testRecord != null){
-                this.testRecord = this.$route.params.testRecord;
-                this.testInfo = this.$route.params.testRecord.test;
-                this.testRecord.test = null;
-            } else {
-                await this.loadRecord(this.$route.params.id_record);
+        async init(){
+            this.id_record = this.$route.params.id_record;
+            
+            if (this.id_record < 0)
+                console.log("Record not found")
+            else
+                await this.loadUserInfo();
+
+            if (this.user != null){
+                if(this.user.role == "STUDENT")
+                    this.loadRecordAsStudent();
             }
 
-            this.setBadAnswers();
+            if (this.user != null){
+                if(this.user.role == "PARENT")
+                    this.loadRecordAsParent();
+            }
 
-            this.isReady = true;
+            if (this.user != null){
+                if(this.user.role == "TEACHER")
+                    this.loadRecordAsTeacher();
+            }
         },
-        async loadRecord(id_record){
+        async loadUserInfo(){
             try{
-                const response = await this.$http.get(`/test/record/get/my/by/id/${id_record}`);
+                const response = await this.$http.get(`/user/my/info`);
                 
-                this.testRecord = response.data;
+                this.user = response.data;
+
+            } catch (e) {
+                const status = e.response.status;
+                if (status == 401)
+                    this.$emit("logoutUser"); 
+            }
+        },
+        async loadRecordAsStudent(){
+            
+            try{
+                const response = await this.$http.get(`/test/record/get/my/by/id/${this.id_record}`);
+                
+                this.testRecord = response.data.record;
 
                 this.testInfo = this.testRecord.test;
 
-                console.log(this.testRecord);
+                this.badQuestions = response.data.badQuestions;
+
+                this.successRate = response.data.successRate;
+
+                if (this.badQuestions != -1)
+                    this.setBadAnswers();
+
+                this.isReady = true;
+
+            } catch (e) {
+                const status = e.response.status;
+                
+                if (status == 401)
+                    this.$emit("logoutUser"); 
+                else if (status == 403){
+                    this.$router.push({ name: 'errNotPerms', });
+                }
+                else if (status == 404){
+                    console.log("Test not found")
+                }
+            }
+        },
+        async loadRecordAsParent(){
+            
+            try{
+                const response = await this.$http.get(`/test/record/get/of/my/child/${this.id_record}`);
+                
+                this.testRecord = response.data.record;
+
+                this.testInfo = this.testRecord.test;
+
+                this.badQuestions = response.data.badQuestions;
+
+                this.successRate = response.data.successRate;
+
+                if (this.badQuestions != -1)
+                    this.setBadAnswers();
+
+                this.isReady = true;
+
+            } catch (e) {
+                const status = e.response.status;
+                
+                if (status == 401)
+                    this.$emit("logoutUser"); 
+                else if (status == 403){
+                    this.$router.push({ name: 'errNotPerms', });
+                }
+                else if (status == 404){
+                    console.log("Test not found")
+                }
+            }
+        },
+        async loadRecordAsTeacher(){
+            
+            try{
+                const response = await this.$http.get(`/test/record/get/of/my/student/${this.id_record}`);
+                
+                this.testRecord = response.data.record;
+
+                this.testInfo = this.testRecord.test;
+
+                this.badQuestions = response.data.badQuestions;
+
+                this.successRate = response.data.successRate;
+
+                if (this.badQuestions != -1)
+                    this.setBadAnswers();
+
+                this.isReady = true;
+
             } catch (e) {
                 const status = e.response.status;
                 
@@ -381,42 +479,6 @@ export default {
                 this.dialog.text = this.dialogItems[1].text;
             }
         },
-        /*
-        resultDialog(result, type){
-            
-            let dialogResult = {
-                result: result,
-                type: type,
-            }
-
-            this.dialog.isSet = false;
-            this.dialog.type = "";
-
-            this.processDialog(dialogResult);
-
-        },
-        processDialog(dialogResult){
-
-          if (dialogResult.type == "startTest"){
-              this.isStarted = dialogResult.result;
-
-              if (this.testRecord.wantSave === true)
-                this.createRecord();
-          } 
-          
-          if(dialogResult.type == "sendTest" && dialogResult.result){
-
-              if (this.testRecord.id_record > 0)
-                this.sendTest();
-          }
-          
-          this.dialog.isSet = false;
-          this.dialog.type = "";
-          this.dialog.text = "";
-          this.dialog.title = "";
-        
-        },
-        */
         setExplanationDialog(explanation){
             this.dialogExplanation.text = explanation.text;
             this.dialogExplanation.picture = explanation.picture;
@@ -478,37 +540,6 @@ export default {
 
             return date;
         },
-        getCountAnswers(){
-            let questions = this.testInfo.questions;
-
-            let count = 0;
-
-            questions.forEach((question) => {
-                count += question.answers.length;
-            });
-
-            return count;
-        },
-        hasBadAnswer(questId){
-
-            if (this.testRecord.badAnswers.length == 0){
-                
-                console.log("NEMA VUBEC")
-                return false;
-            
-            }
-
-            if(!this.testRecord.badAnswers.some(badAnswer => badAnswer.id === questId)){
-                console.log("NEMA")
-                
-                return false;       
-            } else {
-                console.log("MA")
-
-                return true;
-            }
-            
-        },
         setBadAnswers(){
 
             this.testInfo.questions.forEach((question) =>{
@@ -525,7 +556,7 @@ export default {
         }
     },
     mounted(){
-        this.initRecord();
+        this.init();
 
         let recaptchaScript = document.createElement('script')
         recaptchaScript.setAttribute('src', 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_HTML')

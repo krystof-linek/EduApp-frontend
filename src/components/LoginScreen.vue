@@ -39,47 +39,80 @@
 
     </v-card>
   </div>
-  <div v-else>
 
-    <v-card :width="cardFormWidth" class="mt-16 mx-auto rounded-lg">
-      <v-container class="px-10 pt-12 text-lg-body-1">
-        <v-card-title class="text-body-1 text-sm-body-1 justify-center pb-5">Vyplňte prosím následující údaje.</v-card-title>
-        <v-select :items="users" label="Uživatel" solo v-model="user"></v-select>
-          <div v-if="user == 'Student'">
-            <v-select :items="grades" label="Ročník" solo v-model="student.grade"></v-select>
-            <v-select :items="letters" label="Třída" solo v-model="student.letter"></v-select>
+  <div class="pt-8 pt-md-16" v-else>
+    <v-card :width="newUserCardWidth" class="mx-auto mt-16 pb-4" rounded="lg" :id="'new-user-form-' + $vuetify.breakpoint.name">
+      <v-card-title :style="titleStyle" class="justify-center font-weight-bold blue white--text py-2 py-md-4 py-xl-6">Vítejte v aplikaci</v-card-title>
+        <div class="mx-6 mx-sm-10 mx-md-16">
+          <div class="mx-lg-16">
+            <div class="mx-lg-5 mx-xl-16">
+              <v-card-title :style="$vuetify.breakpoint.name == 'xs' ? 'font-size: 4.5vw' : ''" class="justify-center mb-2 mv-sm-6">Vyplňte prosím následující údáje</v-card-title>
+            
+                <v-select :items="users" solo v-model="user" label="Uživatel"></v-select>
+              
+                <v-row v-if="user == 'Student'">
+                  <v-col cols="6">
+                    <v-select :items="grades" label="Ročník" solo v-model="student.grade"></v-select>
+                  </v-col>
+
+                  <v-col cols="6">
+                    <v-select :items="letters" label="Třída" solo v-model="student.letter"></v-select>
+                  </v-col>
+                </v-row>
+
+            </div>
           </div>
-        <v-card-actions>
-          <v-btn v-if="isCorrect" :width="buttonWidth" v-bind="buttonSize" class="mx-auto rounded-pill" color="success" @click="newUser">
-            <span class="font-weight-bold">Registrovat se</span>
-          </v-btn>
-          <v-btn v-else :width="buttonWidth" v-bind="buttonSize" class="mx-auto rounded-pill" disabled>
-            <span class="font-weight-bold">Registrovat se</span>
-          </v-btn>
-        </v-card-actions>
-      </v-container>
-    </v-card>
+        </div>
 
+          <v-card-actions>
+            <v-btn v-if="$vuetify.breakpoint.lgAndUp" large :disabled="!isCorrect" :width="buttonWidth" :style="btnTextSize" class="mx-auto rounded-pill font-weight-bold" color="success" @click="newUser">
+              Registrovat se
+            </v-btn>
+
+            <v-btn v-else :disabled="!isCorrect" :width="buttonWidth" :style="btnTextSize" class="mx-auto rounded-pill font-weight-bold" color="success" @click="newUser">
+              Registrovat se
+            </v-btn>
+          </v-card-actions>
+
+    </v-card>
   </div>
+
+  <div v-if="dialogWarning.isSet">
+    <my-dialog-warning :propTitle="dialogWarning.title" :propText='dialogWarning.text' @clickOnOk="dialogWarning.isSet = false"></my-dialog-warning>
+  </div>
+
 </div>
 </template>
 
 <script>
+import DialogWarningWindow from '../components/DialogWarningWindow.vue'
+
   export default {
+    components:{
+      "my-dialog-warning": DialogWarningWindow,
+    },
     data: () => ({
       isLogged: false,
       isAlert: false,
       isNewUser: false,
+
       token: "",
       email: "",
       users: ["Student","Rodič","Učitel"],
       grades: ['1','2','3','4','5','6','7','8','9'],
       letters: ["A","B"],
       user: "",
+
       student: {
-        grade: '',
+        grade: -1,
         letter: '',
-      }
+      },
+
+      dialogWarning: {
+            isSet: false,
+            text: '',
+            title: '',
+        },
     }),
     methods:{
       async login(){
@@ -91,30 +124,52 @@
         this.loadUserInfo();
       },
       async loadUserInfo(){
-            try{
-                const response = await this.$http.get(`/user/exist/${this.email}`);
-                if (response.status == 200){
-                  this.$userManager.setEmail(this.email);
-                  this.$emit("userLogged");
-                }
-            } catch (e) {
-              let status = e.response.status;
+        try{
+          const response = await this.$http.get(`/user/my/info`);
+
+          const user = response.data;
+
+          if (user.validated){
+              this.$userManager.setEmail(user.email);
+              this.$emit("userLogged");
+          } else {
               this.$tokenManager.removeToken();
+              this.dialogWarning.title = "Upozornění";
+              this.dialogWarning.text = "Váš účet nebyl dosud ověřen. Prosím vyčkejte, než dojde k jeho ověření."
+              this.dialogWarning.isSet = true;
+          }
+
+        } catch (e) {
+              let status = e.response.status;
 
               if(status == 404)
                 this.isNewUser = true;
-              if(status == 401)
+              if(status == 401){
+                this.$tokenManager.removeToken();
                 this.isAlert = true;
+              }
             }
       },
       async newUser(){
+        
         this.$tokenManager.setToken(this.token);
-        let classRoom = this.student.grade + '.' + this.student.letter;
         let role = this.getRole();
         try {
-          await this.$http.post("/user/new", {classRoom: classRoom, role: role});
-          this.$userManager.setEmail(this.email);
-          this.$emit("userLogged");
+          const response = await this.$http.post("/user/new", {classRoom: this.student.letter, grade: this.student.grade, role: role});
+
+          const user = response.data;
+
+          if (user.validated){
+            this.$userManager.setEmail(user.email);
+            this.$emit("userLogged");
+          } else {
+            this.$tokenManager.removeToken();
+            this.isNewUser = false;
+            this.dialogWarning.title = "Upozornění";
+            this.dialogWarning.text = "Váš účet nebyl dosud ověřen. Prosím vyčkejte, než dojde k jeho ověření."
+            this.dialogWarning.isSet = true;
+          }
+
         } catch(e){
           const statusCode = e.response.status;
           this.$tokenManager.removeToken();
@@ -202,7 +257,7 @@
         },
         btnTextSize () {
           switch (this.$vuetify.breakpoint.name) {
-          case 'xs': return 'font-size: 4vw'
+          case 'xs': return 'font-size: 3.5vw'
           case 'sm': return 'font-size: 2vw'
           case 'md': return 'font-size: 1.5vw'
           case 'lg': return 'font-size: 1.3vw'
@@ -218,128 +273,61 @@
           default: return 'font-size: 1vw'
           }
         },
+        titleStyle() {
+          switch (this.$vuetify.breakpoint.name) {
+            case 'xs': return 'my-window-title-xs'
+            case 'sm': return 'my-window-title-sm'
+            case 'md': return 'my-window-title-md'
+            case 'xl': return 'my-window-title-xl'
+            default: return 'my-window-title-lg' //lg
+          }
+        },
+        newUserCardWidth () {
+            switch (this.$vuetify.breakpoint.name) {
+              case 'xs': return '100%'
+              case 'sm': return '90vw'
+              case 'md': return '60vw'
+              case 'lg': return '60vw'
+              default: return '60vw'
+            }
+        },
     },
   }
 </script>
 <style>
-#my-login-label span{
-  font-size: 0.5em;
-  font-weight: bold;
+#new-user-form-xl .v-select{
+  font-size: 1.4vw;
+}
+#new-user-form-xl .v-select .v-label{
+  font-size: 1.4vw;
 }
 
-#my-xs-welcome{
-  font-size: 18px;
+#new-user-form-lg .v-select{
+  font-size: 1.5vw;
+}
+#new-user-form-lg .v-select .v-label{
+  font-size: 1.5vw;
 }
 
-#my-sm-welcome{
-  font-size: 20px;
+#new-user-form-md .v-select{
+  font-size: 2.3vw;
+}
+#new-user-form-md .v-select .v-label{
+  font-size: 2.3vw;
 }
 
-#my-md-welcome{
-  font-size: 20px;
+#new-user-form-sm .v-select{
+  font-size: 3vw;
+}
+#new-user-form-sm .v-select .v-label{
+  font-size: 3vw;
 }
 
-#my-lg-welcome{
-  font-size: 27px;
+#new-user-form-xs .v-select{
+  font-size: 5vw;
+}
+#new-user-form-xs .v-select .v-label{
+  font-size: 5vw;
 }
 
-#my-xl-welcome{
-  font-size: 35px;
-}
-
-
-
-#my-xs-welcome span.my-welcome-text{
-  margin-top: 10px;
-}
-
-#my-sm-welcome span.my-welcome-text{
-  margin-top: 5px;
-}
-
-#my-md-welcome span.my-welcome-text{
-  margin-top: 10px;
-}
-
-#my-lg-welcome span.my-welcome-text{
-  margin-top: 20px;
-}
-
-#my-xl-welcome span.my-welcome-text{
-  margin-top: 30px;
-}
-
-
-
-#my-xs-welcome span.my-logo-text{
-  font-size: 130%;
-  margin-bottom: 15px;
-  margin-top: -10px;
-  font-weight: bold;
-}
-
-#my-sm-welcome span.my-logo-text{
-  font-size: 140%;
-  margin-top: -30px;
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
-#my-md-welcome span.my-logo-text{
-  font-size: 140%;
-  margin-top: -5px;
-  margin-bottom: 20px;
-  font-weight: bold;
-}
-
-#my-lg-welcome span.my-logo-text{
-  font-size: 150%;
-  margin-top: 10px;
-  margin-bottom: 30px;
-  font-weight: bold;
-}
-
-#my-xl-welcome span.my-logo-text{
-  font-size: 150%;
-  margin-bottom: 30px;
-  margin-top: 5px;
-  font-weight: bold;
-}
-
-
-
-#my-xs-welcome span.my-description-text{
-  font-size: 55%;
-  margin-bottom: -5px;
-  margin-top: 4px;
-  font-weight: bold;
-}
-
-#my-sm-welcome span.my-description-text{
-  font-size: 55%;
-  margin-top: -5px;
-  margin-bottom: -15px;
-  font-weight: bold;
-}
-
-#my-md-welcome span.my-description-text{
-  font-size: 55%;
-  margin-bottom: 3px;
-  margin-top: 4px;
-  font-weight: bold;
-}
-
-#my-lg-welcome span.my-description-text{
-  font-size: 60%;
-  margin-bottom: 3px;
-  margin-top: 4px;
-  font-weight: bold;
-}
-
-#my-xl-welcome span.my-description-text{
-  font-size: 60%;
-  margin-bottom: 3px;
-  margin-top: 5px;
-  font-weight: bold;
-}
 </style>

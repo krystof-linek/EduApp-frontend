@@ -285,7 +285,6 @@ export default {
             this.isReady = true;
         },
         scrollToContent(id) {
-            console.log(id)
          
             const element = document.getElementById('content-link-' + id);
 

@@ -414,7 +414,7 @@ export default {
           if (dialogResult.type == "startTest"){
               this.isStarted = dialogResult.result;
 
-              if (this.testRecord.wantSave === true)
+              if (this.testRecord.wantSave === true && this.isStarted == true)
                 this.createRecord();
           } 
           

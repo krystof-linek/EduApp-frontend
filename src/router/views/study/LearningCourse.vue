@@ -3,7 +3,7 @@
 <v-card class="mx-md-0 mt-4 mt-lg-0 mx-xl-16 pa-lg-n7" elevation="5" rounded="lg">
 
   <v-card-title class="justify-center font-weight-bold blue white--text py-2 py-md-4 py-xl-6">
-    <label :id="titleStyle">Výuka</label>
+    <label :id="'my-window-title-' + $vuetify.breakpoint.name">Výuka</label>
   </v-card-title>
 
 <v-stepper outlined v-model="e1" rounded="lg" color="primary">
@@ -134,9 +134,8 @@
 
     props: {
         user: {default: null},
-        pCorId: {default: -1},
-        pSubId: {default: -1},
-        pGrade: {default: -1},
+        propSubId: {default: -1},
+        propGrade: {default: -1},
     },
     data () {
       return {
@@ -177,15 +176,6 @@
       },
     },
     computed: {
-      titleStyle() {
-        switch (this.$vuetify.breakpoint.name) {
-          case 'xs': return 'my-window-title-xs'
-          case 'sm': return 'my-window-title-sm'
-          case 'md': return 'my-window-title-md'
-          case 'xl': return 'my-window-title-xl'
-          default: return 'my-window-title-lg' //lg
-        }
-      },
       cardTitleStyle() {
         switch (this.$vuetify.breakpoint.name) {
           case 'md': return 'font-size: 2.1vw'
@@ -294,12 +284,10 @@
           }
         },
         setStepper(){
-          if(this.pGrade != -1)
-            this.selectGrade(this.pGrade, 1);
-          if(this.pSubId != -1)
-            this.selectSubject(this.pSubId, 2);
-          if(this.pCorId != -1)
-            this.loadAllCoursesById(this.pCorId);
+          if(this.propGrade != -1)
+            this.selectGrade(this.propGrade, 1);
+          if(this.propSubId != -1)
+            this.selectSubject(this.propSubId, 2);
         },
         getDate(date){
             let array = date.split('T');

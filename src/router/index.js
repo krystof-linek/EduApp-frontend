@@ -11,11 +11,12 @@ import FormCourseNew from './views/teacher/FormCourseNew'
 import FormCourseEdit from './views/FormCourseEdit'
 import FormTestNew from './views/teacher/FormTestNew'
 import FormTestEdit from './views/teacher/FormTestEdit'
-import FormAccCheck from './views/teacher/FormAccCheck'
+import FormAccCheck from './views/FormAccCheck'
 
 import DesktopLoadTests from "./views/DesktopLoadTests"
 import UseTest from './views/UseTest'
 import TestRecord from './views/TestRecord'
+import TestRecordsList from './views/TestRecordsList'
 
 
 import ShowCourse from './views/ShowCourse'
@@ -36,14 +37,17 @@ const routes = [
     { path: "/kontakty", component: ContactInfo, name: "contacts", meta: { requireAuth: true }},
     { path: "/aplikace", component: AppInfo, name: "application", meta: { requireAuth: true }},
     
-    { path: "/testy", component: DesktopLoadTests, name: "test", meta: { requireAuth: true }},
-    { path: "/novy/test", component: FormTestNew, name: "newTest", meta: { requireAuth: true }},
-    { path: "/upravit/test", component: FormTestEdit, name: "editTest", props: true, meta: { requireAuth: true }},
-    { path: "/ucty/schvalit", component: FormAccCheck, name: "checkParents", meta: { requireAuth: true }},
+    { path: "/testy", component: DesktopLoadTests, name: "test", props: true, meta: { requireAuth: true }},
+    { path: "/test/novy", component: FormTestNew, name: "newTest", meta: { requireAuth: true }},
+    { path: "/test/vypracovat/:id_test", component: UseTest, name: "useTest", meta: { requireAuth: true }},
+    { path: "/test/upravit", component: FormTestEdit, name: "editTest", props: true, meta: { requireAuth: true }},
+    { path: "/testy/vysledky", component: TestRecordsList, name: "testRecords", props: true, meta: { requireAuth: true }},
+    { path: "/test/vysledek/:id_record", component: TestRecord, name: "testRecord", meta: { requireAuth: true }},
+   
 
-    { path: "/test/:id_test", component: UseTest, name: "useTest", meta: { requireAuth: true }},
 
-    { path: "/vysledek/test/:id_record", component: TestRecord, name: "testRecord", meta: { requireAuth: true }},
+    { path: "/sprava/ucty", component: FormAccCheck, name: "checkParents", meta: { requireAuth: true }},
+
 
     { path: "/chyba/prava", component: NotHavePerms, name: "errNotPerms"},
 

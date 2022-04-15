@@ -1,8 +1,8 @@
 <template>
-    <v-card class="mx-16 pb-4 mb-8" outlined color="transparent">
+    <v-card elevation="5" rounded="lg">
 
-    <v-card-title class="justify-center pt-8">
-      <h1>Úprava kurzu</h1>
+    <v-card-title class="justify-center font-weight-bold blue white--text py-2 py-md-4 py-xl-6">
+      <label :id="'my-window-title-' + $vuetify.breakpoint.name">Úprava kurzu</label>
     </v-card-title>
 
     <v-divider></v-divider>
@@ -26,12 +26,25 @@
         <v-stepper-content v-for="n in steps" :key="`${n}-content`" :step="n">
           <v-card outlined color="transparent" class="mt-n5">
               <v-card v-if="n==1" outlined color="transparent">
-                <v-card-title>
-                  <v-text-field v-model="search" append-icon="mdi-magnify" label="Vyhledat kurz" hide-details id="my-search" single-line>
+                
+                <v-card class="pa-3 mx-2 pb-5" outlined color="transparent" rounded="lg">
+                  
+                  <v-row align="center" class="pa-0 mt-5">
+                    
+                    <v-col cols="9" xl="10" class="pa-0">
+                        <v-text-field :disabled="courses.length == 0" class="mx-2" solo v-model="search" outlined hide-details prepend-inner-icon="mdi-magnify" label="Vyhledat"></v-text-field>
+                    </v-col>
 
-                  </v-text-field>
-                </v-card-title>
-                <v-data-table :headers="headers" :items="courses" :search="search" @click:row="handleClick" id="my-table" :items-per-page="-1"
+                    <v-spacer></v-spacer>
+
+                    <v-col cols="3" xl="2" class="pa-0 text-center">
+                        <v-btn large class="font-weight-bold" color="success" @click="$router.push({ name: 'newCourse' });">Nový kurz<v-icon class="ml-2">mdi-plus-thick</v-icon></v-btn>
+                    </v-col>
+                  </v-row>
+
+                </v-card>
+                
+                <v-data-table v-if="courses.length != 0" :headers="headers" :items="courses" :search="search" @click:row="handleClick" id="my-table" :items-per-page="-1"
                   :footer-props="{
                     showFirstLastPage: true,
                     firstIcon: 'mdi-arrow-collapse-left',
@@ -197,7 +210,6 @@
                             <v-col cols="3">
                               <v-select background-color="blue-grey lighten-5" v-model="titleContent.icon_color" :items="titleContent.colors" item-text="color" item-value="value" label="Barva ikony"></v-select>
                             </v-col>
-                            <label class="ml-3 mb-2 mt-n4 text-caption font-italic text--secondary">Nadpis není povinný údaj.</label>
                         </v-row>
                       </v-form>
                     </div>
@@ -384,6 +396,7 @@ import ContentNotice from '../../components/ContentNotice.vue'
             {icon: "vykřičník", value: 'mdi-exclamation-thick'},
             {icon: "otazník", value: 'mdi-help'},
             {icon: "kniha", value: 'mdi-book-open-page-variant-outline'},
+            {icon: "terč", value: 'mdi-bullseye-arrow'},
           ],
           alertMessages: ["Nemáte příslušná oprávnění pro tuto akci", "Kurz, ke kteremu chcete pridat nadpis nebyl nalezen!"],
         },
@@ -624,7 +637,7 @@ import ContentNotice from '../../components/ContentNotice.vue'
           } catch(e){
             const statusCode = e.response.status;
 
-            this.showNewContentAlert(statusCode, this.tiitleContent.alertMessages);
+            this.showNewContentAlert(statusCode, this.titleContent.alertMessages);
           }
         },
         resetTitleContent(){

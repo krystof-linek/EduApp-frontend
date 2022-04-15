@@ -1,8 +1,8 @@
 <template>
-  <v-card outlined color="transparent">
+  <v-card rounded="lg" min-height="50vh" class="pb-5">
 
-    <v-card-title class="justify-center pt-8">
-      <h1>Vytvořit kurz</h1>
+    <v-card-title class="justify-center font-weight-bold blue white--text py-2 py-md-4 py-xl-6">
+        <label :id="'my-window-title-' + $vuetify.breakpoint.name">Nový kurz</label>
     </v-card-title>
 
     <v-divider></v-divider>
@@ -16,7 +16,7 @@
         <v-text-field v-model="courseName" label="Název kurzu" :rules="rules" hide-details="auto" class="text-center mb-5"></v-text-field>
         <v-select v-model="grade" :items="grades" item-text="grade" :rules="[(value) => !!value || 'Musíte zvolit ročník']" item-value="value" :label=" grade == 0 ? 'Vyberte ročník' : 'Zvolený ročník'"></v-select>
         <v-select v-if="grade != 0" v-model="subject" :items="subjects" item-text="title" :rules="[(value) => !!value || 'Musíte zvolit předmět']" :label=" subject == '' ? 'Vyberte předmět' : 'Zvolený předmět'" return-object></v-select>
-        <v-btn class="mt-3 justify-center" color="success" @click="createCourse" :disabled='!isValid'>Vytvořit</v-btn>
+        <v-btn large class="mt-3 justify-center font-weight-bold" color="success" @click="createCourse" :disabled='!isValid'>Vytvořit</v-btn>
       </v-form>
     </v-card>
          

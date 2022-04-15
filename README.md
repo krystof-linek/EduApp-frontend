@@ -1,4 +1,4 @@
-# gauth
+# HudcovkaEDU
 
 ## Project setup
 ```

@@ -1,8 +1,8 @@
 <template>
-    <v-card outlined color="transparent">
+    <v-card rounded="lg" elevation="5">
 
-    <v-card-title class="justify-center pt-8">
-      <h1>Úprava testu</h1>
+    <v-card-title class="justify-center font-weight-bold blue white--text py-2 py-md-4 py-xl-6">
+      <label :id="'my-window-title-' + $vuetify.breakpoint.name">Editace testů</label>
     </v-card-title>
 
     <v-divider></v-divider>
@@ -27,11 +27,24 @@
           <v-card outlined color="transparent" class="mt-n5">
               <v-card v-if="n==1" outlined color="transparent">
                 
-                <v-toolbar class="mb-3" height="80vw" elevation="10">
-                  <v-text-field class="mt-5" v-model="search" clearable flat hide-details prepend-inner-icon="mdi-magnify" label="Vyhledat"></v-text-field>
-                </v-toolbar>
+                <v-card class="pa-3 mx-2 pb-5" outlined color="transparent" rounded="lg">
+                  
+                  <v-row align="center" class="pa-0 mt-5">
+                    
+                    <v-col cols="9" xl="10" class="pa-0">
+                        <v-text-field :disabled="tests.length == 0" class="mx-2" solo v-model="search" outlined hide-details prepend-inner-icon="mdi-magnify" label="Vyhledat"></v-text-field>
+                    </v-col>
 
-                 <v-data-table :headers="headers" :items="tests" hide-default-header :search="search" @click:row="handleClick" :items-per-page="-1"
+                    <v-spacer></v-spacer>
+
+                    <v-col cols="3" xl="2" class="pa-0 text-center">
+                        <v-btn large class="font-weight-bold" color="success" @click="$router.push({ name: 'newTest' });">Nový test<v-icon class="ml-2">mdi-plus-thick</v-icon></v-btn>
+                    </v-col>
+                  </v-row>
+
+                </v-card>
+
+                 <v-data-table v-if="tests.length != 0" :headers="headers" :items="tests" hide-default-header :search="search" @click:row="handleClick" :items-per-page="-1"
                  :footer-props="{
                     showFirstLastPage: true,
                     firstIcon: 'mdi-arrow-collapse-left',
