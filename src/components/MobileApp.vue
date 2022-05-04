@@ -8,11 +8,7 @@
         </v-col>
 
         <v-col cols="6" sm="8" class="white--text font-weight-bold text-center">
-          <v-hover :style="'cursor: pointer'">
-            <div @click="$router.push({ name: 'application' })"> 
-              <label :style="logoFontStyle" >ZŠ HUDCOVA</label>
-            </div>
-          </v-hover>
+          <v-btn text class="white--text" link @click="$router.push({ name: 'application' })" :style="logoFontStyle" >ZŠ HUDCOVA</v-btn>
         </v-col>
         
         <v-col cols="3" sm="2" class="text-right">
