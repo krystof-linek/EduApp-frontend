@@ -8,11 +8,13 @@
         </v-col>
 
         <v-col cols="6" sm="8" class="white--text font-weight-bold text-center">
-          <v-hover :style="'cursor: pointer'" @click="$router.push({ name: 'application' })">
-            <label :style="logoFontStyle" >ZŠ HUDCOVA</label>
+          <v-hover :style="'cursor: pointer'">
+            <div @click="$router.push({ name: 'application' })"> 
+              <label :style="logoFontStyle" >ZŠ HUDCOVA</label>
+            </div>
           </v-hover>
         </v-col>
-
+        
         <v-col cols="3" sm="2" class="text-right">
           <v-btn class="mr-3 mr-sm-5" color="blue" :height="navBtnSize" :width="navBtnSize" @click="showMenu = !showMenu">
             <v-icon color="white" large>mdi-menu</v-icon>
