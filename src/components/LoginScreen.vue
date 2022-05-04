@@ -118,9 +118,9 @@ import DialogWarningWindow from '../components/DialogWarningWindow.vue'
       async login(){
         this.isAlert = false;
         const googleUser = await this.$gAuth.signIn();
-        this.token = googleUser.wc.id_token;
-        this.email = googleUser.Ju.zv;
-        this.$tokenManager.setToken(googleUser.wc.id_token);
+        this.token = googleUser.xc.id_token;
+        this.email = googleUser.Ru.Hv;
+        this.$tokenManager.setToken(this.token);
         this.loadUserInfo();
       },
       async loadUserInfo(){

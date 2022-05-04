@@ -4,9 +4,7 @@
       <v-row class="py-4 py-sm-6" align="center" id="my-background">
 
         <v-col cols="3" sm="2" class="text-left">
-          <v-btn class="ml-3 ml-sm-5" color="blue" :height="navBtnSize" :width="navBtnSize" @click="showMenu = !showMenu">
-            <v-icon color="white" large>mdi-menu</v-icon>
-          </v-btn>
+          <v-btn @click="logout()" class="ml-3 ml-sm-5" color="blue" :height="navBtnSize" :width="navBtnSize"><v-icon color="white" large>mdi-logout-variant</v-icon></v-btn>
         </v-col>
 
         <v-col cols="6" sm="8" class="white--text font-weight-bold text-center">
@@ -16,7 +14,9 @@
         </v-col>
 
         <v-col cols="3" sm="2" class="text-right">
-          <v-btn @click="logout()" class="mr-3 mr-sm-5" color="blue" :height="navBtnSize" :width="navBtnSize"><v-icon color="white" large>mdi-logout-variant</v-icon></v-btn>
+          <v-btn class="mr-3 mr-sm-5" color="blue" :height="navBtnSize" :width="navBtnSize" @click="showMenu = !showMenu">
+            <v-icon color="white" large>mdi-menu</v-icon>
+          </v-btn>
         </v-col>
       
       </v-row>

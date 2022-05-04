@@ -35,7 +35,7 @@ const routes = [
     { path: "/login", component: LoginScreen, name: "login"},
     { path: "/logout", component: LogoutPage, name: "logout"},
     { path: "/kontakty", component: ContactInfo, name: "contacts", meta: { requireAuth: true }},
-    { path: "/aplikace", component: AppInfo, name: "application", meta: { requireAuth: true }},
+    { path: "/", component: AppInfo, name: "application", meta: { requireAuth: true }},
     
     { path: "/testy", component: DesktopLoadTests, name: "test", props: true, meta: { requireAuth: true }},
     { path: "/test/novy", component: FormTestNew, name: "newTest", meta: { requireAuth: true }},

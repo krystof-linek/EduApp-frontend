@@ -143,8 +143,8 @@
                                                         </v-col>
                                                     </v-row>
 
-                                                    <v-sheet :color="answer.true ? 'warning' : 'error'" class="py-0" rounded="lg">
-                                                        <v-card-text :style="textAreaStyle" class="white--text py-2 px-lg-5 py-3 mt-n2">
+                                                    <v-sheet :style="answer.true ? 'border-style: dashed !important; border-color:green !important;' : ''" :color="answer.true ? 'blue-grey lighten-3' : 'error'" class="py-0" rounded="lg">
+                                                        <v-card-text :style="textAreaStyle" :class="answer.true ? 'white--black py-1 px-lg-4 py-2' : 'white--text py-2 px-lg-5 py-3 mt-n2'">
                                                             {{ answer.content.text }}
                                                         </v-card-text>
                                                     </v-sheet>

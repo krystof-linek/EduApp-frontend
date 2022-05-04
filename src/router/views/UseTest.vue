@@ -99,7 +99,7 @@
                             </v-row>
                         -->   
                             <v-card elevation="8" :color="answer.true ? 'success' : 'blue-grey lighten-3'" @click="answer.true = !answer.true" class="py-0" rounded="lg">
-                                <v-card-text :style="textAreaStyle" :class="answer.true ? 'white--text py-2 px-lg-5 py-3 mt-n2' : 'py-2 px-lg-5 py-3 mt-n2'">
+                                <v-card-text :style="textAreaStyle" :class="answer.true ? 'white--text my-2 py-2 px-lg-5 py-3 mt-n2' : 'my-2 py-2 px-lg-5 py-3 mt-n2'">
                                     <span class="font-weight-bold">{{ index + 1 }}. </span>{{ answer.content.text }}
                                 </v-card-text>
                             </v-card>
