@@ -8,7 +8,7 @@
         </v-col>
 
         <v-col cols="6" sm="8" class="white--text font-weight-bold text-center">
-          <v-hover :style="'cursor: pointer'" @click="$router.push({ name: 'contacts' })">
+          <v-hover :style="'cursor: pointer'" @click="$router.push({ name: 'application' })">
             <label :style="logoFontStyle" >ZŠ HUDCOVA</label>
           </v-hover>
         </v-col>
@@ -25,7 +25,7 @@
     <v-card v-if="showMenu" class="mx-auto" width="100%" id="my-mobile-label">
       <v-list nav color="blue lighten-4">
 
-        <v-list-item @click="showMenu = false">
+        <v-list-item @click="$router.push({ name: 'contacts' }); showMenu = false;">
           <v-list-item-title class="text-center"><label :style="labelFontStyle">Kontakty</label></v-list-item-title>
         </v-list-item>
 
