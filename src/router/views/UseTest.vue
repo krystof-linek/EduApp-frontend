@@ -78,19 +78,19 @@
                             </v-card-text>
                         </v-sheet>
 
-                        <v-card class="my-2 my-sm-4" v-if="questions[questionIndex].content.picture != ''" :width="answerPictureWidth" style="margin:auto" rounded="lg" elevation="8"> 
+                        <v-card class="my-2 my-sm-4" v-if="questions[questionIndex].content.picture != '' && questions[questionIndex].content.picture != null" :width="answerPictureWidth" style="margin:auto" rounded="lg" elevation="8"> 
                             <v-img :src="questions[questionIndex].content.picture"></v-img>
                         </v-card>
 
-                        <v-card outlined color="transparent" v-if="questions[questionIndex].content.equation != ''" class="mt-1 mb-1 ma-2 mt-sm-2 mb-sm-2 py-sm-4">
+                        <v-card outlined color="transparent" v-if="questions[questionIndex].content.equation != '' && questions[questionIndex].content.equation != null" class="mt-1 mb-1 ma-2 mt-sm-2 mb-sm-2 py-sm-4">
                             <vue-mathjax :style="answerEquationFontStyle" :formula="questions[questionIndex].content.equation"></vue-mathjax>
                         </v-card>
 
-                        <v-sheet v-if="questions[questionIndex].content.equation != '' || questions[questionIndex].content.picture != ''" class="py-1 py-sm-2 py-xl-4 mb-xl-5" rounded="lg" color="blue lighten-4" width="100%">
+                        <v-sheet v-if="(questions[questionIndex].content.equation != '' || questions[questionIndex].content.picture != '') && (questions[questionIndex].content.equation != null || questions[questionIndex].content.picture != null)" class="py-1 py-sm-2 py-xl-4 mb-xl-5" rounded="lg" color="blue lighten-4" width="100%">
                         </v-sheet>
                         <!-- odpovedi -->
                         
-                        <v-card class="my-1 mt-sm-2 mt-lg-4 mt-xl-8" color="transparent" outlined v-for="(answer, index) in questions[questionIndex].answers" :key="index">
+                        <div v-for="(answer, index) in questions[questionIndex].answers" :key="index">
                         <!--              
                             <v-row class="mx-0 pb-3 pb-lg-4" no-gutters align="center">  
                                 <v-col>
@@ -98,26 +98,26 @@
                                 </v-col>                     
                             </v-row>
                         -->   
-                            <v-card elevation="8" :color="answer.true ? 'success' : 'blue-grey lighten-3'" @click="answer.true = !answer.true" class="py-0" rounded="lg">
-                                <v-card-text :style="textAreaStyle" :class="answer.true ? 'white--text my-2 py-2 px-lg-5 py-3 mt-n2' : 'my-2 py-2 px-lg-5 py-3 mt-n2'">
+                            <v-card elevation="8" :color="answer.true ? 'success' : 'blue-grey lighten-3'" @click="answer.true = !answer.true" class="pa-0 ma-0" rounded="lg">
+                                <v-card-text :style="textAreaStyle" :class="answer.true ? 'white--text my-4 py-2 my-sm-5' : 'my-4 py-2 my-sm-5'">
                                     <span class="font-weight-bold">{{ index + 1 }}. </span>{{ answer.content.text }}
                                 </v-card-text>
                             </v-card>
 
-                            <v-col v-if="answer.content.picture != ''" class="my-2 my-sm-4 py-0">
+                            <v-col class="pa-0" v-if="answer.content.picture != '' && answer.content.picture != null">
                                 <v-card :width="answerPictureWidth" style="margin:auto" rounded="lg" elevation="8"> 
                                     <v-img :src="answer.content.picture"></v-img>
                                 </v-card>
                             </v-col>
 
-                            <v-col class="my-0 my-sm-4 pb-0 pt-1" v-if="answer.content.equation != ''">
+                            <v-col class="pa-0" v-if="answer.content.equation != '' && answer.content.equation != null">
                                 <v-sheet>
                                     <vue-mathjax :style="answerEquationFontStyle" :formula="answer.content.equation"></vue-mathjax>
                                 </v-sheet>
                             </v-col>
-                        </v-card>
+                        </div>
 
-                        <v-divider></v-divider>
+                        <v-divider class="mt-4"></v-divider>
                             
                         <v-card-actions class="justify-center my-md-2 my-lg-4 my-xl-6">
                             <v-btn rounded :style="startBtnSize" v-bind="testBtnSize" class="font-weight-bold py-5 px-7 py-sm-5" color="success" @click="questionIndex == questions.length - 1 ? setDialog('sendTest') : questionIndex++ ">{{ questionIndex == questions.length - 1 ? 'odeslat' : 'další' }}</v-btn>
@@ -221,11 +221,11 @@ export default {
         },
         answerEquationFontStyle () {
         switch (this.$vuetify.breakpoint.name) {
-          case 'xs': return 'font-size: 3.5vw'
-          case 'sm': return 'font-size: 3vw'
-          case 'md': return 'font-size: 3vw'
-          case 'lg': return 'font-size: 2.5vw'
-          default: return 'font-size: 2.5vw'
+          case 'xs': return 'font-size: 5.5vw'
+          case 'sm': return 'font-size: 5vw'
+          case 'md': return 'font-size: 3.5vw'
+          case 'lg': return 'font-size: 3.3vw'
+          default: return 'font-size: 2.7vw'
           }
         },
         answerPictureWidth() {

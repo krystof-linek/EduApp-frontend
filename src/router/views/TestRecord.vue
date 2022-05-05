@@ -94,10 +94,10 @@
                                             <label :style="labelsFontStyle" class="font-weight-bold">Správné řešení:</label>
                                             
                                             <v-card class="py-0" color="transparent" outlined v-for="(answer, ansIndex) in question.answers" :key="ansIndex">
-                                                <div v-if="answer.true" class="mt-1 mt-sm-2 mt-lg-3">
+                                                <div v-if="answer.true">
                                                    
-                                                    <v-row class="mx-0 pb-3 pb-lg-4" no-gutters align="center">  
-                                                        <v-col class="ml-4 ml-lg-5">
+                                                    <v-row class="mb-2 pa-2" no-gutters align="center">  
+                                                        <v-col>
                                                             <label :style="labelsFontStyle">{{ ansIndex + 1 }}. odpověď</label>
                                                         </v-col>
 
@@ -112,13 +112,13 @@
                                                         </v-card-text>
                                                     </v-sheet>
 
-                                                    <v-col v-if="answer.content.picture != ''" class="my-2 my-sm-4 py-0">
+                                                    <v-col class="py-0 mt-2 mb-0" v-if="answer.content.picture != '' && answer.content.picture != null ">
                                                         <v-card :width="answerPictureWidth" style="margin:auto" rounded="lg" elevation="8"> 
                                                             <v-img :src="answer.content.picture"></v-img>
                                                         </v-card>
                                                     </v-col>
 
-                                                    <v-col class="my-2 my-sm-4" v-if="answer.content.equation != ''">
+                                                    <v-col class="py-0 mt-2 mb-0" v-if="answer.content.equation != '' && answer.content.equation != null">
                                                         <v-sheet>
                                                             <vue-mathjax :style="answerEquationFontStyle" :formula="answer.content.equation"></vue-mathjax>
                                                         </v-sheet>
@@ -131,10 +131,10 @@
                                             
                                             <label :style="labelsFontStyle" class="font-weight-bold">Chybné odpovědi:</label>
 
-                                            <v-card class="mt-1 mt-sm-2" color="transparent" outlined v-for="(answer, ansIndex) in question.badAnswers" :key="ansIndex">
+                                            <v-card color="transparent" outlined v-for="(answer, ansIndex) in question.badAnswers" :key="ansIndex">
                                                
-                                                    <v-row class="mx-0 pb-3 pb-lg-4" no-gutters align="center">  
-                                                        <v-col class="ml-4 ml-lg-5">
+                                                    <v-row class="my-2 pa-2" no-gutters align="center">  
+                                                        <v-col>
                                                             <label :style="labelsFontStyle">{{ ansIndex + 1 }}. odpověď</label>
                                                         </v-col>
 
@@ -149,13 +149,13 @@
                                                         </v-card-text>
                                                     </v-sheet>
 
-                                                    <v-col v-if="answer.content.picture != ''" class="my-2 my-sm-4 py-0">
+                                                    <v-col class="py-0 mt-2 mb-0" v-if="answer.content.picture != '' && answer.content.picture != null">
                                                         <v-card :width="answerPictureWidth" style="margin:auto" rounded="lg" elevation="8"> 
                                                             <v-img :src="answer.content.picture"></v-img>
                                                         </v-card>
                                                     </v-col>
 
-                                                    <v-col class="my-2 my-sm-4" v-if="answer.content.equation != ''">
+                                                    <v-col class="py-0 mt-2 mb-0" v-if="answer.content.equation != '' && answer.content.equation != null">
                                                         <v-sheet>
                                                             <vue-mathjax :style="answerEquationFontStyle" :formula="answer.content.equation"></vue-mathjax>
                                                         </v-sheet>
@@ -279,11 +279,11 @@ export default {
         },
         answerEquationFontStyle () {
         switch (this.$vuetify.breakpoint.name) {
-          case 'xs': return 'font-size: 3.5vw'
-          case 'sm': return 'font-size: 3vw'
-          case 'md': return 'font-size: 3vw'
+          case 'xs': return 'font-size: 5.5vw'
+          case 'sm': return 'font-size: 5vw'
+          case 'md': return 'font-size: 3.5vw'
           case 'lg': return 'font-size: 2.5vw'
-          default: return 'font-size: 2.5vw'
+          default: return 'font-size: 2.7vw'
           }
         },
         answerPictureWidth() {
