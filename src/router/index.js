@@ -4,8 +4,6 @@ import ContactInfo from "./views/ContactInfo"
 import AppInfo from "./views/AppInfo"
 import LearningCourse from "./views/LearningCourse"
 import LoginScreen from '../components/LoginScreen'
-import HelloWorld from '../components/HelloWorld'
-import LogoutPage from './views/LogoutPage'
 
 import FormCourseNew from './views/FormCourseNew'
 import FormCourseEdit from './views/FormCourseEdit'
@@ -22,18 +20,17 @@ import TestRecordsList from './views/TestRecordsList'
 import ShowCourse from './views/ShowCourse'
 
 import NotHavePerms from './views/errors/NotHavePerms'
+import NotFound from './views/errors/NotFound'
 
 import { tokenManager } from "../main";
+import { userManager } from "../main";
 
 
 Vue.use(VueRouter)
 
 const routes = [
 
-    { path: "/hello", component: HelloWorld, name: "hello", meta: { requireAuth: true }},
-
-    { path: "/login", component: LoginScreen, name: "login"},
-    { path: "/logout", component: LogoutPage, name: "logout"},
+    { path: "/prihlaseni", component: LoginScreen, name: "login"},
     { path: "/kontakty", component: ContactInfo, name: "contacts", meta: { requireAuth: true }},
     { path: "/", component: AppInfo, name: "application", meta: { requireAuth: true }},
     
@@ -57,6 +54,8 @@ const routes = [
     { path: "/vyuka/novy/kurz", component: FormCourseNew, name: "newCourse", meta: { requireAuth: true }},
     { path: "/vyuka/upravit/kurz", component: FormCourseEdit, name: "editCourse", meta: { requireAuth: true }},
 
+    { path: "*", component: NotFound, name: "notFound"},
+
     /*
     { path: "/register", component: Register, name: "register"},
     { path: "/contacts", component: Contacts, name: "contacts"},
@@ -79,7 +78,9 @@ router.beforeEach((to, from, next) => {
         if(tokenManager.isUserLogged()){
             next();
         } else {
-            next({ name: "logout" });
+            tokenManager.removeToken();
+            userManager.removeEmail();
+            next({ name: "login" });
         } 
     } else {
         next();
