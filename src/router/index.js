@@ -2,15 +2,15 @@ import Vue from "vue"
 import VueRouter from "vue-router"
 import ContactInfo from "./views/ContactInfo"
 import AppInfo from "./views/AppInfo"
-import LearningCourse from "./views/study/LearningCourse"
+import LearningCourse from "./views/LearningCourse"
 import LoginScreen from '../components/LoginScreen'
 import HelloWorld from '../components/HelloWorld'
 import LogoutPage from './views/LogoutPage'
 
-import FormCourseNew from './views/teacher/FormCourseNew'
+import FormCourseNew from './views/FormCourseNew'
 import FormCourseEdit from './views/FormCourseEdit'
-import FormTestNew from './views/teacher/FormTestNew'
-import FormTestEdit from './views/teacher/FormTestEdit'
+import FormTestNew from './views/FormTestNew'
+import FormTestEdit from './views/FormTestEdit'
 import FormAccCheck from './views/FormAccCheck'
 
 import DesktopLoadTests from "./views/DesktopLoadTests"
