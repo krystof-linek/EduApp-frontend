@@ -308,7 +308,7 @@ export default {
                     this.$router.push({ name: 'errNotPerms', });
                 }
                 else if (status == 404){
-                    console.log("Test not found")
+                    this.$router.push({ name: 'notFound', });
                 }
             }
         },

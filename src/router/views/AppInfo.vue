@@ -44,11 +44,8 @@
     data () {
       return {
         colors: [
-          'indigo',
-          'warning',
-          'pink darken-2',
-          'red lighten-1',
-          'deep-purple accent-4',
+          'blue',
+          'blue',
         ],
         pictures: [
           'https://www.medlanky.cz/wp-content/uploads/2014/11/z%c5%a1-hudcova.jpg',
@@ -68,12 +65,6 @@
           {id: -5, text:'Test:', bold: 'Násobení'},
         ],
       }
-    },
-    computed: {
-      
-    },
-    methods: {
-      
     },
   }
 </script>

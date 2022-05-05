@@ -44,7 +44,7 @@
 
                 </v-card>
                 
-                <v-data-table v-if="courses.length != 0" :headers="headers" :items="courses" :search="search" @click:row="handleClick" id="my-table" :items-per-page="-1"
+                <v-data-table v-if="courses.length != 0" :headers="headers" hide-default-header :items="courses" :search="search" id="my-table" :items-per-page="-1"
                   :footer-props="{
                     showFirstLastPage: true,
                     firstIcon: 'mdi-arrow-collapse-left',
@@ -57,6 +57,35 @@
                     'page-text': '{0}-{1} z {2}'
                 }"
                 >
+
+                <template v-slot:header>
+                    <thead class="v-data-table-header">
+                      <tr>
+                        <th class="text-uppercase">Název kurzu</th>
+                        <th class="text-uppercase">Předmět</th>
+                        <th class="text-uppercase text-center">Ročník</th>
+                        <th class="text-uppercase text-center">Vytvořen</th>
+                        <th class="text-uppercase text-center">Akce</th>
+                     </tr>
+                    </thead>
+                </template>
+
+                <template v-slot:item="row">
+                    <tr>
+                      <td>{{row.item.title}}</td>
+                      <td>{{row.item.subject.title}}</td>
+                      <td class="text-center">{{row.item.subject.grade}}</td>
+                      <td class="text-center">{{row.item.created}}</td>
+                      <td class="text-center">
+                        <v-btn class="mx-2" fab dark small color="blue" @click="loadCourseContentById(row.item)">
+                            <v-icon dark>mdi-file-edit</v-icon>
+                        </v-btn>
+                        <v-btn class="mx-2" fab dark small color="red" @click="idCourse = row.item.id; dialog.isSet = true; dialog.type = 'deleteCourse'">
+                            <v-icon dark>mdi-trash-can</v-icon>
+                        </v-btn>
+                      </td>
+                    </tr>
+                  </template>
                     
                 </v-data-table>
               </v-card>
@@ -139,7 +168,7 @@
                           </v-row>
                           <v-row>
                             <v-col cols="12" sm="9">
-                              <v-text-field background-color="blue-grey lighten-5" v-model="videoContent.link" :rules='pictureContent.rules' label="Odkaz" hide-details="auto"></v-text-field>
+                              <v-text-field background-color="blue-grey lighten-5" v-model="videoContent.link" :rules='videoContent.rules' label="Odkaz" hide-details="auto"></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="3">
                               <v-text-field background-color="blue-grey lighten-5" v-model="videoContent.author" label="Autor" hide-details="auto"></v-text-field>
@@ -312,9 +341,14 @@
       </v-stepper-items>
     </v-stepper>
     </v-card>
+    <div v-if="dialog.isSet">
+        <my-dialog v-if="dialog.type == 'deleteCourse'" :propType="dialog.type" propTitle="Pozor!" propText="Opravdu si přejte smazat tento kurz? Operaci již nebude možné vzít zpět." @dialogResult="resultDialog"></my-dialog>
+    </div>
   </v-card>
 </template>
 <script>
+import DialogWindow from '../../components/DialogWindow.vue'
+
 import ContentTitle from '../../components/ContentTitle.vue'
 import ContentParagraph from '../../components/ContentParagraph.vue'
 import ContentPicture from '../../components/ContentPicture.vue'
@@ -331,10 +365,13 @@ import ContentNotice from '../../components/ContentNotice.vue'
       "mylink": ContentLink,
       "mylist": ContentList,
       "mynotice": ContentNotice,
+
+      "my-dialog": DialogWindow,
     },
     props: {
         user: {default: null},
         courseId: {default: -1},
+        propCourse: {default: null},
     },
     data () {
       return {
@@ -364,6 +401,15 @@ import ContentNotice from '../../components/ContentNotice.vue'
           { text: 'Předmět', value: 'subject.title'},
           { text: 'Ročník', value: 'subject.grade'},
           { text: 'Vytvořen', value: 'created'},
+        ],
+
+        dialog: {
+            isSet: false,
+            type: ""
+        },
+
+        imgRules: [
+            value => (value.length == 0 || /^http.*$/.test(value)) || "Chybný odkaz na obrázek!"
         ],
 
         idCourse: -1,
@@ -462,7 +508,7 @@ import ContentNotice from '../../components/ContentNotice.vue'
           link: '',
           rules: [
             value => !!value || 'Jedná se o povinný údaj!',
-            value => (value && value.length >= 3) || 'Musí obsahovat alespoň tři znaky!',
+            value => (value && /^http.*$/.test(value)) || "Odkaz je chybný!",
           ],
           alertMessages: ["Nemáte příslušná oprávnění pro tuto akci", "Kurz, ke kteremu chcete pridat obrázek nebyl nalezen!"],
         },
@@ -476,7 +522,7 @@ import ContentNotice from '../../components/ContentNotice.vue'
           link: '',
           rules: [
             value => !!value || 'Jedná se o povinný údaj!',
-            value => (value && value.length >= 3) || 'Musí obsahovat alespoň tři znaky!',
+            value => (value && /^http.*youtu.*$/.test(value)) || "Odkaz je chybný!",
           ],
           alertMessages: ["Nemáte příslušná oprávnění pro tuto akci", "Kurz, ke kterému chcete přidat video nebyl nalezen!"],
         },
@@ -533,6 +579,12 @@ import ContentNotice from '../../components/ContentNotice.vue'
                 this.e1 = n + 1
             }
         },
+        setCourse(){
+          this.idCourse = this.propCourse.id;
+          this.courseName = this.propCourse.title;
+          this.reloadCourseContent();
+          this.nextStep(1);
+        },
         async loadAllCourses(){
             try{
                 const response = await this.$http.get(`/course/all/from/author`);
@@ -561,17 +613,24 @@ import ContentNotice from '../../components/ContentNotice.vue'
             }
           });
         },
-        handleClick(value) {
-            this.isAlert = false;
-            this.idCourse = value.id;
-            this.courseName = value.title;
-            this.loadCourseContentById(this.idCourse);
-        },
-        async loadCourseContentById(id){
+        async loadCourseContentById(course){
+          this.isAlert = false;
+          this.idCourse = course.id;
+          this.courseName = course.title;
           try{
-            const response = await this.$http.get(`/course/content/by/id/${id}`);
+            const response = await this.$http.get(`/course/content/by/id/${this.idCourse}`);
             this.contents = response.data;
             this.nextStep(1);
+          } catch (e) {
+              const status = e.response.status;
+              if (status == 401)
+                this.$emit("logoutUser"); 
+          }
+        },
+        async reloadCourseContent(){
+          try{
+            const response = await this.$http.get(`/course/content/by/id/${this.idCourse}`);
+            this.contents = response.data;
           } catch (e) {
               const status = e.response.status;
               if (status == 401)
@@ -767,17 +826,50 @@ import ContentNotice from '../../components/ContentNotice.vue'
                 this.isAlert = true;
           } 
         },
-
-        reloadCourseContent(){
-          this.loadCourseContentById(this.idCourse);
-          this.selected = '';
-        },
-
         scrollToContent() {
           setTimeout(() => {
             const element = document.getElementById('scrollView');
             element.scrollIntoView({behavior: "smooth", block: "start"});   
           }, 300); 
+        },
+        processDialog(dialogResult){
+          if(dialogResult.type == "deleteCourse"){
+            if(dialogResult.result)
+              this.deleteCourse()
+          }
+         
+          this.dialog.isSet = false;
+          this.dialog.type = "";
+        
+        },
+        resultDialog(result, type){
+            
+            let dialogResult = {
+                result: result,
+                type: type,
+            }
+
+            this.dialog.isSet = false;
+            this.dialog.type = "";
+
+            this.processDialog(dialogResult);
+        },
+        async deleteCourse(){
+
+          try{
+            const response = await this.$http.delete(`/course/delete/own/by/id/${this.idCourse}`);
+
+            if (response.status == 204)
+              this.loadAllCourses();
+
+          } catch (e) {
+            const status = e.response.status;
+            if (status == 401)
+              this.$emit("logoutUser"); 
+            else if (status == 403){
+              this.$router.push({ name: 'errNotPerms', });
+            }
+          }
         },
         getDate(date){
             let array = date.split('T');
@@ -793,6 +885,9 @@ import ContentNotice from '../../components/ContentNotice.vue'
     },
     mounted(){
         this.loadAllCourses();
+
+        if (this.propCourse != null)
+          this.setCourse();
     }
   }
 </script>

@@ -87,7 +87,7 @@
           const response = await this.$http.post("/course/new", {course_title: this.courseName, subject_title: this.subject.title, grade: this.grade});
           this.courseId = response.data.id;
 
-          this.$router.push({ name: 'course', params: {pGrade: this.grade, pSubId: this.subject.idSubject, pCorId: this.courseId}});
+          this.$router.push({ name: 'editCourse', params: {propCourse: response.data}});
         } catch(e){
           const statusCode = e.response.status;
           

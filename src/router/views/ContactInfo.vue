@@ -41,46 +41,12 @@
 </template>
 <script>
 
-  export default {
+export default {
 
-    data () {
-      return {
-        colors: [
-          'indigo',
-          'warning',
-          'pink darken-2',
-          'red lighten-1',
-          'deep-purple accent-4',
-        ],
-        slides: [
-          'First',
-          'Second',
-          'Third',
-          'Fourth',
-          'Fifth',
-        ],
-        course_info: [
-          {text:'Navštivte sekci:', bold: 'Výuka'},
-          {text:'Vyberte:', bold: '1. ročník'},
-          {text:'Zvolte předmět:', bold: 'Prvouka'},
-          {text:'Kurz:', bold: 'Roční období'},
-        ],
-        test_info: [
-          {text:'Navštivte sekci:', bold: 'Testy'},
-          {text:'Následně zvolte::', bold: 'Psát test'},
-          {text:'Vyberte:', bold: '5. ročník'},
-          {text:'Zvolte předmět:', bold: 'Matematika'},
-          {text:'Test:', bold: 'Násobení'},
-        ],
-      }
-    },
-    computed: {
-      
-    },
     methods: {
-        myRedirect(){
-            window.open('https://github.com/krystof-linek','_blank');
-        },
-    }
+      myRedirect(){
+          window.open('https://github.com/krystof-linek','_blank');
+    },
   }
+}
 </script>

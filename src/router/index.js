@@ -52,7 +52,7 @@ const routes = [
     { path: "/vyuka", component: LearningCourse, name: "course", meta: { requireAuth: true }, props: true},
     { path: "/vyuka/kurz/:id_course", component: ShowCourse, name: "courseById", props: true, meta: { requireAuth: true }},
     { path: "/vyuka/novy/kurz", component: FormCourseNew, name: "newCourse", meta: { requireAuth: true }},
-    { path: "/vyuka/upravit/kurz", component: FormCourseEdit, name: "editCourse", meta: { requireAuth: true }},
+    { path: "/vyuka/upravit/kurz", component: FormCourseEdit, name: "editCourse", props: true, meta: { requireAuth: true }},
 
     { path: "*", component: NotFound, name: "notFound"},
 
@@ -80,7 +80,7 @@ router.beforeEach((to, from, next) => {
         } else {
             tokenManager.removeToken();
             userManager.removeEmail();
-            next({ name: "login" });
+            next({ name: "application" });
         } 
     } else {
         next();

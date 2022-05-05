@@ -195,15 +195,14 @@ export default {
 
           try{
             const response = await this.$http.get(`/course/content/by/id/${id}`);
-
             this.contents = response.data;
 
           } catch (e) {
               const status = e.response.status;
               if (status == 401)
-                this.$emit("logoutUser"); 
-
-            console.log("error")
+                this.$emit("logoutUser");
+              if (status == 404)
+                this.$router.push({name: 'notFound'});
           }
         },
         setContentLinks(){

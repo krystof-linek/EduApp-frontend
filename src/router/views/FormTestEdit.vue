@@ -361,7 +361,10 @@ import DialogExplainWindow from '../../components/DialogExplainWindow.vue'
         },
     },
     mounted(){
-      this.propTest != null ? this.setTest() : this.loadAllTests();
+      this.loadAllTests();
+
+        if (this.propTest != null)
+          this.setTest()
     }
   }
 </script>
