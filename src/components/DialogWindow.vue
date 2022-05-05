@@ -5,7 +5,7 @@
           {{propTitle}}
         </v-card-title>
 
-        <v-card-text :style="textFontSize" class="mt-4 font-weight-bold">
+        <v-card-text :style="textFontSize" class="mt-4">
             {{propText}}
         </v-card-text>
 
@@ -63,11 +63,11 @@ export default {
       },
       textFontSize () {
         switch (this.$vuetify.breakpoint.name) {
-          case 'xs': return 'font-size: 3.2vw; line-height: 150%;'
-          case 'sm': return 'font-size: 2.2vw; line-height: 150%;'
-          case 'md': return 'font-size: 1.8vw; line-height: 170%;'
-          case 'lg': return 'font-size: 1.5vw; line-height: 170%;'
-          default: return 'font-size: 1.2vw; line-height: 170%;'
+          case 'xs': return 'font-size: 3.2vw; line-height: 150%; text-align: justify;'
+          case 'sm': return 'font-size: 2.2vw; line-height: 150%; text-align: justify;'
+          case 'md': return 'font-size: 1.8vw; line-height: 170%; text-align: justify;'
+          case 'lg': return 'font-size: 1.5vw; line-height: 170%; text-align: justify;'
+          default: return 'font-size: 1.2vw; line-height: 170%; text-align: justify;'
           }
       },
       btnFontStyle () {

@@ -1,7 +1,7 @@
 <template>
     <div v-if="testInfo != null">
-        <v-row class="justify-center mb-5">
-        <v-card outlined color="transparent" width="85%">    
+       
+        <v-card outlined color="transparent" class="mx-10">    
             <v-card-actions>
                 <v-row>
                     <v-col cols="12" sm="12" class="text-center">
@@ -171,7 +171,7 @@
                 </v-form>
             </div>
         </v-card>
-        </v-row>
+        
 
         <div v-if="dialog.isSet">
             <my-dialog :propType='dialog.type' :propTitle="dialog.title" :propText='dialog.text' @dialogResult="resultDialog"></my-dialog>
@@ -182,16 +182,6 @@
 <script>
 import DialogWindow from '../components/DialogWindow.vue'
 import {VueMathjax} from 'vue-mathjax'
-/*
-
-<v-card-title class="mb-5">
-                <v-sheet class="pa-2" color="blue" rounded="lg">
-                    <span class="white--text">{{ index + 1 + '/' + testInfo.questions.length }}</span>
-                </v-sheet>
-                    <label class="ml-3">{{ testInfo.questions[index].content.text }}</label>
-            </v-card-title>
-
-*/
 
 export default {
 

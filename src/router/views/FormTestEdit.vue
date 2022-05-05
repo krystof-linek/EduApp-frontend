@@ -44,7 +44,7 @@
 
                 </v-card>
 
-                 <v-data-table v-if="tests.length != 0" :headers="headers" :items="tests" hide-default-header :search="search" @click:row="handleClick" :items-per-page="-1"
+                 <v-data-table v-if="tests.length != 0" :headers="headers" :items="tests" hide-default-header :search="search" :items-per-page="-1"
                  :footer-props="{
                     showFirstLastPage: true,
                     firstIcon: 'mdi-arrow-collapse-left',
@@ -77,14 +77,14 @@
                       <td class="text-center">{{row.item.subject.grade}}</td>
                       <td class="text-center">{{row.item.created}}</td>
                       <td class="text-center">
-                        <v-icon v-if="row.item.active" @click="changeActive(row.item.id, row.item.active)" color="success" x-large>mdi-check-bold</v-icon>
-                        <v-icon v-else color="error" @click="changeActive(row.item.id, row.item.active)" x-large>mdi-close-thick</v-icon>
+                        <v-icon v-if="row.item.active" @click="idTest = row.item.id; dialog.isSet = true; dialog.type = 'deactivateTest'" color="success" x-large>mdi-check-bold</v-icon>
+                        <v-icon v-else color="error" @click="idTest = row.item.id; dialog.isSet = true; dialog.type = 'activateTest'" x-large>mdi-close-thick</v-icon>
                       </td>
                       <td class="text-center">
                         <v-btn class="mx-2" fab dark small color="blue" @click="loadTestInfo(row.item.id)">
                             <v-icon dark>mdi-file-edit</v-icon>
                         </v-btn>
-                        <v-btn class="mx-2" fab dark small color="red" @click="deleteTestById(row.item.id)">
+                        <v-btn class="mx-2" fab dark small color="red" @click="idTest = row.item.id; dialog.isSet = true; dialog.type = 'deleteTest'">
                             <v-icon dark>mdi-trash-can</v-icon>
                         </v-btn>
                       </td>
@@ -96,8 +96,8 @@
              
         <!-- Vykresli stavajici obsah -->
 
-              <v-card class="ma-8 my-2 pb-2" v-if="n==2 && testInfo != null" outlined color="transparent">
-                  <div class="ma-8">
+              <v-card class="my-2 pb-2" v-if="n==2 && testInfo != null" outlined color="transparent">
+                  
                     <div v-if="testInfo.active == true">
 
                       <v-row class="justify-center">
@@ -125,14 +125,10 @@
 
                     </div>
                     <div v-else>
-                      <v-row class="justify-center">
-                        <v-card class="pt-5" width="100%" rounded="lg" elevation="5">
-                          <test-info-edit :propTest='testInfo'></test-info-edit>
-                          <test-question-edit :propTest='testInfo'></test-question-edit>
-                        </v-card>
-                      </v-row>
+                      <test-info-edit :propTest='testInfo'></test-info-edit>
+                      <test-question-edit :propTest='testInfo'></test-question-edit>
                     </div>
-                  </div>
+                  
               </v-card> 
           </v-card>
         </v-stepper-content>
@@ -141,7 +137,9 @@
     </v-card>
 
     <div v-if="dialog.isSet">
-        <my-dialog v-if="dialog.type = 'deactivateTest'" :propType="dialog.type" propTitle="Pozor!" propText="Opravdu si přejete zamezit přístup ostatním uživatelům k testu?" @dialogResult="resultDialog"></my-dialog>
+        <my-dialog v-if="dialog.type == 'deactivateTest'" :propType="dialog.type" propTitle="Upozornění" propText="Opravdu si přejete skrýt test?" @dialogResult="resultDialog"></my-dialog>
+        <my-dialog v-else-if="dialog.type == 'activateTest'" :propType="dialog.type" propTitle="Upozornění" propText="Opravdu si přejete zveřejnit test?" @dialogResult="resultDialog"></my-dialog>
+        <my-dialog v-else-if="dialog.type == 'deleteTest'" :propType="dialog.type" propTitle="Pozor!" propText="Pokud dojde ke smazaní testu, tak jeho obsah bude nenávratně ztracen. Opravdu si přejte smazat tento test?" @dialogResult="resultDialog"></my-dialog>
     </div>
 
     <div v-if="dialogInfo.isSet">
@@ -215,8 +213,6 @@ import DialogExplainWindow from '../../components/DialogExplainWindow.vue'
         }
       },
     },
-    computed: {
-    },
     methods: {
         nextStep (n) {
             if (n === this.steps) {
@@ -224,12 +220,6 @@ import DialogExplainWindow from '../../components/DialogExplainWindow.vue'
             } else {
                 this.e1 = n + 1
             }
-        },
-        handleClick(value) {
-            this.isAlert = false;
-            this.idTest = value.id;
-            this.testTitle = value.title;
-            this.loadTestInfo(this.idTest);
         },
         async loadAllTests(){
             try{
@@ -245,6 +235,7 @@ import DialogExplainWindow from '../../components/DialogExplainWindow.vue'
             }
         },
         async loadTestInfo(id){
+            this.idTest = id;
             try{
                 const response = await this.$http.get(`/test/by/id/${id}`);
                 this.testInfo = response.data;
@@ -266,6 +257,14 @@ import DialogExplainWindow from '../../components/DialogExplainWindow.vue'
             if(dialogResult.result)
               this.deactivateTest()
           }
+          if(dialogResult.type == "activateTest"){
+            if(dialogResult.result)
+              this.activateTest()
+          }
+          if(dialogResult.type == "deleteTest"){
+            if(dialogResult.result)
+              this.deleteTest()
+          }
           this.dialog.isSet = false;
           this.dialog.type = "";
         
@@ -282,20 +281,14 @@ import DialogExplainWindow from '../../components/DialogExplainWindow.vue'
 
             this.processDialog(dialogResult);
         },
-        changeActive(id_test, active){
-
-          if(active)
-            this.deactivateTestById(id_test);
-          else
-            this.activateTestById(id_test);
-
-        },
-        async deactivateTestById(id_test){
+        async deactivateTest(){
           try{
-            const response = await this.$http.get(`/test/deactivate/by/id/${id_test}`);
+            const response = await this.$http.get(`/test/deactivate/by/id/${this.idTest}`);
 
-            if (!response.data.active)
+            if (!response.data.active){
               this.loadAllTests();
+              this.testInfo = response.data;
+            }
 
           } catch (e) {
             const status = e.response.status;
@@ -306,9 +299,9 @@ import DialogExplainWindow from '../../components/DialogExplainWindow.vue'
             }
           }
         },
-        async activateTestById(id_test){
+        async activateTest(){
           try{
-            const response = await this.$http.get(`/test/activate/by/id/${id_test}`);
+            const response = await this.$http.get(`/test/activate/by/id/${this.idTest}`);
 
             if (response.data.active)
               this.loadAllTests();
@@ -322,29 +315,13 @@ import DialogExplainWindow from '../../components/DialogExplainWindow.vue'
             }
           }
         },
-        async deactivateTest(){
-          try{
-            const response = await this.$http.get(`/test/deactivate/by/id/${this.testInfo.id}`);
-
-            this.testInfo = response.data;
-
-          } catch (e) {
-            const status = e.response.status;
-            if (status == 401)
-              this.$emit("logoutUser"); 
-            else if (status == 403){
-              this.$router.push({ name: 'errNotPerms', });
-            }
-          }
-        },
-        async deleteTestById(id_test){
+        async deleteTest(){
 
           try{
-            const response = await this.$http.delete(`/test/delete/own/by/id/${id_test}`);
+            const response = await this.$http.delete(`/test/delete/own/by/id/${this.idTest}`);
 
-            console.log(response);
-
-            this.loadAllTests();
+            if (response.status == 204)
+              this.loadAllTests();
 
           } catch (e) {
             const status = e.response.status;

@@ -1,5 +1,5 @@
 <template>
-    <v-row class="justify-center mb-5">
+    
     <v-card v-if="testInfo != null" color="transparent" outlined>
         <v-alert class="mt-5 ma-5" v-if="isAlert" border="left" close-text="Close Alert" color="rgba(0, 123, 255)" dark dismissible>
           {{alertMessage}}
@@ -41,7 +41,7 @@
         </div>
 
     </v-card>
-    </v-row>
+   
 </template>
 <script>
 import DialogWindow from '../components/DialogWindow.vue'
