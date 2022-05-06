@@ -48,8 +48,8 @@
           'blue',
         ],
         pictures: [
-          'https://www.medlanky.cz/wp-content/uploads/2014/11/z%c5%a1-hudcova.jpg',
-          'https://www.ped.muni.cz/pedagogika/wp-content/uploads/2020/01/hudcova.jpg',
+          require('@/assets/slides/slide1.jpg'),
+          require('@/assets/slides/slide2.jpg'),
         ],
         course_info: [
           {id: 1, text:'Navštivte sekci:', bold: 'Výuka'},
